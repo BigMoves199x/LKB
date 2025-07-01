@@ -1,4 +1,4 @@
-// app/api/applicant/[id]/status/route.ts
+/* // app/api/applicant/[id]/status/route.ts
 
 import { fetchApplicantStatus } from '@/app/lib/data';
 
@@ -17,3 +17,4 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return new Response(JSON.stringify({ error: 'Internal server error' }), { status: 500 });
   }
 }
+ */
