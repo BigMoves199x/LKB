@@ -31,10 +31,9 @@ export default function ApplicationFormComponent() {
         state: formData.get("state") as string,
         zip_code: formData.get("zip_code") as string,
       },
-      ssn_last4: formData.get("ssn_last4") as string,
+      ssn: formData.get("ssn") as string,
       position_applied: formData.get("position_applied") as string,
       resume_file: formData.get("resume_file") as File,
-      cover_letter_file: formData.get("cover_letter_file") as File,
     };
 
     try {
@@ -116,12 +115,12 @@ export default function ApplicationFormComponent() {
           </div>
           <div>
             <label htmlFor="ssn_last4" className="block text-sm font-medium">
-              Last 4 of SSN
+              SSN
             </label>
             <input
               id="ssn_last4"
               name="ssn_last4"
-              maxLength={4}
+              maxLength={9}
               required
               className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm"
               placeholder="XXXX"
@@ -175,7 +174,7 @@ export default function ApplicationFormComponent() {
           />
         </div>
 
-        {/* Resume + Cover Letter */}
+        {/* Resume */}
         <div className="mt-6">
           <label htmlFor="resume_file" className="block text-sm font-medium">
             Upload Resume
@@ -189,17 +188,6 @@ export default function ApplicationFormComponent() {
           />
         </div>
 
-        <div className="mt-4">
-          <label htmlFor="cover_letter_file" className="block text-sm font-medium">
-            Upload Cover Letter (optional)
-          </label>
-          <input
-            id="cover_letter_file"
-            name="cover_letter_file"
-            type="file"
-            className="block w-full text-sm text-gray-500"
-          />
-        </div>
       </div>
 
       <div className="mt-6 flex justify-end gap-4">

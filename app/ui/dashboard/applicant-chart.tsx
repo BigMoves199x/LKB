@@ -1,10 +1,10 @@
 import { generateYAxis } from "@/app/lib/utils";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { lusitana } from "@/app/ui/fonts";
-import { fetchApplicationStats } from "@/app/lib/data"; // You’ll need to define this
+import { fetchApplicationStats } from "@/app/lib/data";
 
 export default async function ApplicationChart() {
-  const stats = await fetchApplicationStats(); // [{ month: 'Jan', count: 45 }, ...]
+  const stats = await fetchApplicationStats();
 
   const chartHeight = 350;
 

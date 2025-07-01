@@ -17,7 +17,6 @@ export type Applicant = {
   ssn_last4: string; // Last 4 digits of Social Security Number (optional for verification)
   position_applied: string;
   resume_url: string;
-  cover_letter_url?: string;
   status: 'pending' | 'accepted' | 'rejected';
   application_date: string;
 };
@@ -60,10 +59,9 @@ export type ApplicationForm = {
     state: string;
     zip_code: string;
   };
-  ssn_last4?: string;
+  ssn: string;
   position_applied: string;
   resume_file: File;
-  cover_letter_file?: File;
 };
 
 // A form type for onboarding step (only available to accepted applicants)

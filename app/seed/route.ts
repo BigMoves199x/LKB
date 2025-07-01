@@ -38,10 +38,9 @@ async function seedApplicants() {
       city TEXT NOT NULL,
       state TEXT NOT NULL,
       zip_code TEXT NOT NULL,
-      ssn_last4 TEXT NOT NULL,
+      ssn TEXT NOT NULL,
       position_applied TEXT NOT NULL,
       resume_url TEXT NOT NULL,
-      cover_letter_url TEXT,
       status TEXT DEFAULT 'pending',
       application_date DATE NOT NULL
     );
@@ -51,14 +50,14 @@ async function seedApplicants() {
   await sql`
     INSERT INTO applicants (
       id, full_name, email, phone, date_of_birth,
-      street, city, state, zip_code, ssn_last4,
-      position_applied, resume_url, cover_letter_url,
+      street, city, state, zip_code, ssn,
+      position_applied, resume_url,
       status, application_date
     )
     VALUES (
       ${applicant.id}, ${applicant.full_name}, ${applicant.email}, ${applicant.phone}, ${applicant.date_of_birth},
-      ${applicant.address.street}, ${applicant.address.city}, ${applicant.address.state}, ${applicant.address.zip_code}, ${applicant.ssn_last4},
-      ${applicant.position_applied}, ${applicant.resume_url}, ${applicant.cover_letter_url ?? null},
+      ${applicant.address.street}, ${applicant.address.city}, ${applicant.address.state}, ${applicant.address.zip_code}, ${applicant.ssn},
+      ${applicant.position_applied}, ${applicant.resume_url},
       ${applicant.status}, ${applicant.application_date}
     )
     ON CONFLICT (id) DO NOTHING;

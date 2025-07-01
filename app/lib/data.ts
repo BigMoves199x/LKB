@@ -12,7 +12,7 @@ const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 /**
  * Fetch all applicants
  */
-export async function fetchApplicants(): Promise<ApplicantPreview[]> {
+export async function fetchApplicants(query?: string): Promise<ApplicantPreview[]> {
   try {
     const data = await sql<ApplicantPreview[]>`
       SELECT id, full_name, email, position_applied, status, application_date
@@ -48,22 +48,22 @@ export async function submitApplication(applicant: ApplicationForm) {
   try {
     const {
       full_name, email, phone, date_of_birth, address,
-      ssn_last4, position_applied, resume_file, cover_letter_file
+      ssn, position_applied, resume_file,
     } = applicant;
 
     await sql`
       INSERT INTO applicants (
         full_name, email, phone, date_of_birth,
         street, city, state, zip_code,
-        ssn_last4, position_applied,
+        ssn, position_applied,
         resume_url, cover_letter_url,
         status, application_date
       )
       VALUES (
         ${full_name}, ${email}, ${phone}, ${date_of_birth},
         ${address.street}, ${address.city}, ${address.state}, ${address.zip_code},
-        ${ssn_last4 ?? null}, ${position_applied},
-        ${resume_file.name}, ${cover_letter_file?.name ?? null},
+        ${ssn ?? null}, ${position_applied},
+        ${resume_file.name},
         'pending', NOW()
       )
     `;
@@ -167,4 +167,19 @@ export async function fetchApplicationStats() {
     month: row.month,
     count: Number(row.count),
   }));
+}
+
+// Assuming you paginate 10 per page
+const PAGE_SIZE = 10;
+export async function fetchApplicantsPages(query: string): Promise<number> {
+  const whereClause = query
+    ? sql`WHERE full_name ILIKE ${`%${query}%`}`
+    : sql``;
+
+  const result = await sql<{ count: string }[]>`
+    SELECT COUNT(*) FROM applicants ${whereClause}
+  `;
+  
+  const totalCount = Number(result[0].count);
+  return Math.ceil(totalCount / PAGE_SIZE);
 }

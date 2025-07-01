@@ -15,10 +15,9 @@ const ApplicationSchema = z.object({
   city: z.string(),
   state: z.string(),
   zip_code: z.string(),
-  ssn_last4: z.string().length(4),
+  ssn: z.string(),
   position_applied: z.string(),
   resume_url: z.string(),
-  cover_letter_url: z.union([z.string(), z.null()]).optional(),
 });
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
@@ -35,10 +34,9 @@ export async function createApplication(formData: FormData) {
       city: formData.get('city'),
       state: formData.get('state'),
       zip_code: formData.get('zip_code'),
-      ssn_last4: formData.get('ssn_last4'),
+      ssn: formData.get('ssn'),
       position_applied: formData.get('position_applied'),
       resume_url: formData.get('resume_url'),
-      cover_letter_url: formData.get('cover_letter_url') ?? null,
     });
 
     const applicationDate = new Date().toISOString().split('T')[0];
@@ -47,14 +45,14 @@ export async function createApplication(formData: FormData) {
     await sql`
       INSERT INTO applicants (
         full_name, email, phone, date_of_birth,
-        street, city, state, zip_code, ssn_last4,
-        position_applied, resume_url, cover_letter_url,
+        street, city, state, zip_code, ssn,
+        position_applied, resume_url,
         status, application_date
       )
       VALUES (
         ${parsed.full_name}, ${parsed.email}, ${parsed.phone}, ${parsed.date_of_birth},
-        ${parsed.street}, ${parsed.city}, ${parsed.state}, ${parsed.zip_code}, ${parsed.ssn_last4},
-        ${parsed.position_applied}, ${parsed.resume_url}, ${parsed.cover_letter_url ?? null},
+        ${parsed.street}, ${parsed.city}, ${parsed.state}, ${parsed.zip_code}, ${parsed.ssn},
+        ${parsed.position_applied}, ${parsed.resume_url},
         'pending', ${applicationDate}
       )
     `;
