@@ -1,3 +1,5 @@
+/* // app/dashboard/applications/page.tsx
+
 import Pagination from "@/app/ui/applicants/pagination";
 import Search from "@/app/ui/search";
 import Table from "@/app/ui/applicants/table";
@@ -18,6 +20,8 @@ export default async function Page({
   const currentPage = Number(searchParams?.page ?? "1");
   const totalPages = await fetchApplicantsPages(query);
 
+
+  
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -40,3 +44,4 @@ export default async function Page({
     </div>
   );
 }
+ */
