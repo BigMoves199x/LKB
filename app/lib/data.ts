@@ -6,6 +6,7 @@ import {
   ApplicantOnboarding,
   OnboardingForm,
 } from './definitions';
+import { applicants } from './placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -56,8 +57,7 @@ export async function submitApplication(applicant: ApplicationForm) {
         full_name, email, phone, date_of_birth,
         street, city, state, zip_code,
         ssn, position_applied,
-        resume_url, cover_letter_url,
-        status, application_date
+        resume_url, status, application_date
       )
       VALUES (
         ${full_name}, ${email}, ${phone}, ${date_of_birth},
@@ -182,4 +182,19 @@ export async function fetchApplicantsPages(query: string): Promise<number> {
   
   const totalCount = Number(result[0].count);
   return Math.ceil(totalCount / PAGE_SIZE);
+}
+
+
+export async function fetchApplicantStatus(id: string) {
+  try {
+    const result = await sql`
+      SELECT id, full_name, status 
+      FROM applicants 
+      WHERE id = ${id}
+    `;
+    return result[0] ?? null;
+  } catch (error) {
+    console.error('Failed to fetch applicant status:', error);
+    throw new Error('Unable to fetch applicant status');
+  }
 }
