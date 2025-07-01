@@ -5,33 +5,65 @@ import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-const FormSchema = z.object({
-  id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
-  status: z.enum(['pending', 'paid']),
-  date: z.string(),
+// Schema for validating form data
+const ApplicationSchema = z.object({
+  full_name: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().min(8),
+  date_of_birth: z.string(),
+  street: z.string(),
+  city: z.string(),
+  state: z.string(),
+  zip_code: z.string(),
+  ssn_last4: z.string().length(4),
+  position_applied: z.string(),
+  resume_url: z.string(),
+  cover_letter_url: z.union([z.string(), z.null()]).optional(),
 });
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-export async function createInvoice(formData: FormData) {
+export async function createApplication(formData: FormData) {
+  try {
+    // Parse and validate form data
+    const parsed = ApplicationSchema.parse({
+      full_name: formData.get('full_name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      date_of_birth: formData.get('date_of_birth'),
+      street: formData.get('street'),
+      city: formData.get('city'),
+      state: formData.get('state'),
+      zip_code: formData.get('zip_code'),
+      ssn_last4: formData.get('ssn_last4'),
+      position_applied: formData.get('position_applied'),
+      resume_url: formData.get('resume_url'),
+      cover_letter_url: formData.get('cover_letter_url') ?? null,
+    });
 
-   const { customerId, amount, status } = CreateInvoice.parse({
-    customerId: formData.get('customerId'),
-    amount: formData.get('amount'),
-    status: formData.get('status'),
-   });
-    const amountInCents = amount * 100;
-    const date = new Date().toISOString().split('T')[0];
+    const applicationDate = new Date().toISOString().split('T')[0];
 
+    // Insert applicant into database
     await sql`
-    INSERT INTO invoices (customer_id, amount, status, date)
-    VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-  `;
+      INSERT INTO applicants (
+        full_name, email, phone, date_of_birth,
+        street, city, state, zip_code, ssn_last4,
+        position_applied, resume_url, cover_letter_url,
+        status, application_date
+      )
+      VALUES (
+        ${parsed.full_name}, ${parsed.email}, ${parsed.phone}, ${parsed.date_of_birth},
+        ${parsed.street}, ${parsed.city}, ${parsed.state}, ${parsed.zip_code}, ${parsed.ssn_last4},
+        ${parsed.position_applied}, ${parsed.resume_url}, ${parsed.cover_letter_url ?? null},
+        'pending', ${applicationDate}
+      )
+    `;
 
-  revalidatePath('/dashboard/invoices');
-  redirect('/dashboard/invoices');
-
+    // Revalidate and redirect
+    revalidatePath('/dashboard/applicants');
+    redirect('/dashboard/applicants');
+  } catch (error) {
+    console.error('Application submission failed:', error);
+    throw new Error('Failed to submit application. Please try again.');
+  }
 }

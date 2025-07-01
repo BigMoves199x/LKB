@@ -1,21 +1,30 @@
- import postgres from 'postgres';
+import postgres from 'postgres';
 
- const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
- async function listInvoices() {
- 	const data = await sql`
-    SELECT invoices.amount, customers.name
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
-    WHERE invoices.amount = 666; `;
+async function listApplicants() {
+  const data = await sql`
+    SELECT 
+      id,
+      full_name,
+      email,
+      position_applied,
+      status,
+      application_date
+    FROM applicants
+    WHERE status = 'pending'
+    ORDER BY application_date DESC
+  `;
 
-	return data;
+  return data;
 }
 
 export async function GET() {
   try {
-    return Response.json(await listInvoices());
+    const applicants = await listApplicants();
+    return Response.json(applicants);
   } catch (error) {
+    console.error('Error fetching applicants:', error);
     return Response.json({ error: 'Something went wrong' }, { status: 500 });
   }
 }
