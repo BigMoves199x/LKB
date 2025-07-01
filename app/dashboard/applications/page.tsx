@@ -6,15 +6,15 @@ import { ApplicantsTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchApplicantsPages } from "@/app/lib/data";
 
-// ✅ Inline the props typing (works better in Next.js)
-export default async function Page({
-  searchParams,
-}: {
+// ✅ Define interface above the component
+interface ApplicationsPageProps {
   searchParams?: {
     query?: string;
     page?: string;
   };
-}) {
+}
+
+export default async function Page({ searchParams }: ApplicationsPageProps) {
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page ?? "1");
   const totalPages = await fetchApplicantsPages(query);
