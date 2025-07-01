@@ -6,15 +6,14 @@ import { ApplicantsTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchApplicantsPages } from "@/app/lib/data";
 
-// ✅ Define interface above the component
-interface ApplicationsPageProps {
+export default async function Page({
+  searchParams,
+}: {
   searchParams?: {
     query?: string;
     page?: string;
   };
-}
-
-export default async function Page({ searchParams }: ApplicationsPageProps) {
+}) {
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page ?? "1");
   const totalPages = await fetchApplicantsPages(query);
