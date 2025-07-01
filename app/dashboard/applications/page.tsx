@@ -6,17 +6,17 @@ import { ApplicantsTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchApplicantsPages } from "@/app/lib/data";
 
-interface PageProps {
+// ✅ Inline the props typing (works better in Next.js)
+export default async function Page({
+  searchParams,
+}: {
   searchParams?: {
     query?: string;
     page?: string;
   };
-}
-
-export default async function Page({ searchParams }: PageProps) {
+}) {
   const query = searchParams?.query ?? "";
   const currentPage = Number(searchParams?.page ?? "1");
-
   const totalPages = await fetchApplicantsPages(query);
 
   return (
@@ -31,18 +31,12 @@ export default async function Page({ searchParams }: PageProps) {
         <Search placeholder="Search applicants..." />
       </div>
 
-      <Suspense
-        key={`${query}-${currentPage}`}
-        fallback={<ApplicantsTableSkeleton />}
-      >
-        {/* ✅ Let the table fetch its own data */}
+      <Suspense key={`${query}-${currentPage}`} fallback={<ApplicantsTableSkeleton />}>
         <Table query={query} currentPage={currentPage} />
       </Suspense>
 
       <div className="mt-5 flex w-full justify-center">
-        <Pagination
-          totalPages={totalPages}
-        />
+        <Pagination totalPages={totalPages} />
       </div>
     </div>
   );

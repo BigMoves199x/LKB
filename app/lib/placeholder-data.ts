@@ -82,6 +82,8 @@ const onboarding = [
     onboarding_completed: true,
     onboarding_date: '2025-06-20',
   },
+
+  
 ];
 
 const monthlyStats = [
