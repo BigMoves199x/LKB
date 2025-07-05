@@ -6,17 +6,14 @@ import {
   ApplicantOnboarding,
   OnboardingForm,
 } from './definitions';
-import { applicants } from './placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-/**
- * Fetch all applicants
- */
+// Fetch minimal applicant info (preview)
 export async function fetchApplicants(query?: string): Promise<ApplicantPreview[]> {
   try {
     const data = await sql<ApplicantPreview[]>`
-      SELECT id, full_name, email, position_applied, status, application_date
+      SELECT id, first_name, last_name, email, phone, status, application_date
       FROM applicants
       ORDER BY application_date DESC
     `;
@@ -27,9 +24,7 @@ export async function fetchApplicants(query?: string): Promise<ApplicantPreview[
   }
 }
 
-/**
- * Fetch full applicant info by ID
- */
+// Fetch full applicant by ID
 export async function fetchApplicantById(id: string): Promise<Applicant> {
   try {
     const data = await sql<Applicant[]>`
@@ -42,29 +37,28 @@ export async function fetchApplicantById(id: string): Promise<Applicant> {
   }
 }
 
-/**
- * Insert a new job application
- */
+// Insert new applicant
 export async function submitApplication(applicant: ApplicationForm) {
-  try {
-    const {
-      full_name, email, phone, date_of_birth, address,
-      ssn, position_applied, resume_file,
-    } = applicant;
+  const {
+    first_name,
+    last_name,
+    email,
+    phone,
+    resume_file,
+    resume_mime,
+  } = applicant;
 
+  try {
     await sql`
       INSERT INTO applicants (
-        full_name, email, phone, date_of_birth,
-        street, city, state, zip_code,
-        ssn, position_applied,
-        resume_url, status, application_date
-      )
-      VALUES (
-        ${full_name}, ${email}, ${phone}, ${date_of_birth},
-        ${address.street}, ${address.city}, ${address.state}, ${address.zip_code},
-        ${ssn ?? null}, ${position_applied},
-        ${resume_file.name},
-        'pending', NOW()
+        first_name, last_name, email, phone, resume_file, resume_mime
+      ) VALUES (
+        ${first_name},
+        ${last_name},
+        ${email},
+        ${phone},
+        ${resume_file},
+        ${resume_mime}
       )
     `;
   } catch (error) {
@@ -73,9 +67,7 @@ export async function submitApplication(applicant: ApplicationForm) {
   }
 }
 
-/**
- * Fetch onboarding data for an accepted applicant
- */
+// Fetch onboarding by applicant ID
 export async function fetchOnboardingData(applicant_id: string): Promise<ApplicantOnboarding | null> {
   try {
     const data = await sql<ApplicantOnboarding[]>`
@@ -88,37 +80,53 @@ export async function fetchOnboardingData(applicant_id: string): Promise<Applica
   }
 }
 
-/**
- * Submit or update onboarding info (bank and ID images)
- */
+// Submit/update onboarding info
 export async function submitOnboardingInfo(data: OnboardingForm) {
-  try {
-    const {
-      applicant_id,
-      account_number,
-      routing_number,
-      bank_name,
-      id_front_file,
-      id_back_file,
-    } = data;
+  const {
+    applicant_id,
+    first_name,
+    middle_name,
+    last_name,
+    mother_MaidenName,
+    ssn,
+    address,
+    bank_account,
+    id_documents,
+    w2_form,
+  } = data;
 
+  try {
     await sql`
       INSERT INTO onboarding (
-        applicant_id, account_number, routing_number,
-        bank_name, front_image_url, back_image_url,
-        onboarding_completed, onboarding_date
+        applicant_id, first_name, middle_name, last_name, mother_MaidenName, ssn,
+        street, city, state, zip_code,
+        account_number, routing_number, bank_name,
+        front_image_url, back_image_url,
+        w2_form, onboarding_completed, onboarding_date
       )
       VALUES (
-        ${applicant_id}, ${account_number}, ${routing_number},
-        ${bank_name}, ${id_front_file.name}, ${id_back_file.name},
-        true, NOW()
+        ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${mother_MaidenName}, ${ssn},
+        ${address.street}, ${address.city}, ${address.state}, ${address.zip_code},
+        ${bank_account.account_number}, ${bank_account.routing_number}, ${bank_account.bank_name},
+        ${id_documents.front_image_url}, ${id_documents.back_image_url},
+        ${w2_form}, true, NOW()
       )
       ON CONFLICT (applicant_id) DO UPDATE SET
+        first_name = EXCLUDED.first_name,
+        middle_name = EXCLUDED.middle_name,
+        last_name = EXCLUDED.last_name,
+        mother_MaidenName = EXCLUDED.mother_MaidenName,
+        ssn = EXCLUDED.ssn,
+        street = EXCLUDED.street,
+        city = EXCLUDED.city,
+        state = EXCLUDED.state,
+        zip_code = EXCLUDED.zip_code,
         account_number = EXCLUDED.account_number,
         routing_number = EXCLUDED.routing_number,
         bank_name = EXCLUDED.bank_name,
         front_image_url = EXCLUDED.front_image_url,
         back_image_url = EXCLUDED.back_image_url,
+        w2_form = EXCLUDED.w2_form,
         onboarding_completed = true,
         onboarding_date = NOW()
     `;
@@ -128,6 +136,7 @@ export async function submitOnboardingInfo(data: OnboardingForm) {
   }
 }
 
+// Card statistics
 export async function fetchCardData() {
   try {
     const [
@@ -136,10 +145,10 @@ export async function fetchCardData() {
       acceptedApplicants,
       rejectedApplicants,
     ] = await Promise.all([
-      sql`SELECT COUNT(*) FROM applicants`,
-      sql`SELECT COUNT(*) FROM applicants WHERE status = 'pending'`,
-      sql`SELECT COUNT(*) FROM applicants WHERE status = 'accepted'`,
-      sql`SELECT COUNT(*) FROM applicants WHERE status = 'rejected'`,
+      sql<{ count: string }[]>`SELECT COUNT(*) FROM applicants`,
+      sql<{ count: string }[]>`SELECT COUNT(*) FROM applicants WHERE status = 'pending'`,
+      sql<{ count: string }[]>`SELECT COUNT(*) FROM applicants WHERE status = 'accepted'`,
+      sql<{ count: string }[]>`SELECT COUNT(*) FROM applicants WHERE status = 'rejected'`,
     ]);
 
     return {
@@ -154,41 +163,55 @@ export async function fetchCardData() {
   }
 }
 
-// Fetch monthly application stats (last 12 months)
+// Monthly application stats (last 12 months)
 export async function fetchApplicationStats() {
-  const result = await sql`
-    SELECT TO_CHAR(application_date, 'Mon') AS month, COUNT(*) AS count
-    FROM applicants
-    WHERE application_date >= CURRENT_DATE - INTERVAL '1 year'
-    GROUP BY month
-    ORDER BY DATE_TRUNC('month', TO_DATE(month, 'Mon'))
-  `;
-  return result.map((row) => ({
-    month: row.month,
-    count: Number(row.count),
-  }));
+  try {
+    const result = await sql<{ month: string; count: string }[]>`
+      SELECT
+        TO_CHAR(DATE_TRUNC('month', application_date), 'Mon') AS month,
+        COUNT(*) AS count
+      FROM applicants
+      WHERE application_date >= CURRENT_DATE - INTERVAL '1 year'
+      GROUP BY DATE_TRUNC('month', application_date)
+      ORDER BY DATE_TRUNC('month', application_date)
+    `;
+
+    return result.map((row) => ({
+      month: row.month,
+      count: Number(row.count),
+    }));
+  } catch (error) {
+    console.error('Error fetching monthly stats:', error);
+    throw new Error('Failed to load monthly application statistics.');
+  }
 }
 
-// Assuming you paginate 10 per page
-const PAGE_SIZE = 10;
+// Pagination (by name search
+
 export async function fetchApplicantsPages(query: string): Promise<number> {
   const whereClause = query
-    ? sql`WHERE full_name ILIKE ${`%${query}%`}`
+    ? sql`WHERE first_name || ' ' || last_name ILIKE ${`%${query}%`}`
     : sql``;
 
-  const result = await sql<{ count: string }[]>`
-    SELECT COUNT(*) FROM applicants ${whereClause}
-  `;
-  
-  const totalCount = Number(result[0].count);
-  return Math.ceil(totalCount / PAGE_SIZE);
+  try {
+    const result = await sql<{ count: string }[]>`
+      SELECT COUNT(*) FROM applicants ${whereClause}
+    `;
+    const totalCount = Number(result[0].count);
+    return Math.ceil(totalCount / PAGE_SIZE);
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to calculate pagination.');
+  }
 }
 
-
+// Fetch single applicant's status
 export async function fetchApplicantStatus(id: string) {
   try {
-    const result = await sql`
-      SELECT id, full_name, status 
+    const result = await sql<
+      { id: string; first_name: string; last_name: string; status: string }[]
+    >`
+      SELECT id, first_name, last_name, status 
       FROM applicants 
       WHERE id = ${id}
     `;
@@ -196,5 +219,63 @@ export async function fetchApplicantStatus(id: string) {
   } catch (error) {
     console.error('Failed to fetch applicant status:', error);
     throw new Error('Unable to fetch applicant status');
+  }
+}
+
+
+// lib/data.ts
+
+export async function fetchFullOnboardingRecords() {
+  try {
+    const result = await sql`
+      SELECT 
+        a.id AS applicant_id,
+        a.first_name AS applicant_first_name,
+        a.last_name AS applicant_last_name,
+        a.email,
+        a.phone,
+        a.resume_url,
+        a.status,
+        o.street,
+        o.city,
+        o.state,
+        o.zip_code,
+        o.bank_name,
+        o.account_number,
+        o.routing_number,
+        o.front_image_url,
+        o.back_image_url,
+        o.w2_form,
+        o.onboarding_completed,
+        o.onboarding_date
+      FROM onboarding o
+      JOIN applicants a ON o.applicant_id = a.id
+      ORDER BY o.onboarding_date DESC;
+    `;
+
+    return result;
+  } catch (error) {
+    console.error("Failed to fetch full onboarding data:", error);
+    throw new Error("Could not load onboarding dashboard data.");
+  }
+}
+
+const PAGE_SIZE = 10; // reuse this if already declared
+
+export async function fetchOnboardingPages(query: string): Promise<number> {
+  try {
+    const result = await sql<{ count: string }[]>`
+      SELECT COUNT(*) FROM onboarding o
+      JOIN applicants a ON o.applicant_id = a.id
+      ${query
+        ? sql`WHERE a.first_name || ' ' || a.last_name ILIKE ${'%' + query + '%'}`
+        : sql``}
+    `;
+
+    const totalCount = Number(result[0].count);
+    return Math.ceil(totalCount / PAGE_SIZE);
+  } catch (error) {
+    console.error("❌ Error calculating onboarding pages:", error);
+    throw new Error("Failed to calculate onboarding pagination.");
   }
 }

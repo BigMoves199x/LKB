@@ -1,6 +1,7 @@
-import { lusitana } from '@/app/ui/fonts';
-import Search from '@/app/ui/search';
-import { Applicant } from '@/app/lib/definitions'; // You'll need to define this type
+import { lusitana } from "@/app/ui/fonts";
+import Search from "@/app/ui/search";
+import { applicants } from "@/app/lib/placeholder-data"; // You'll need to define this type
+import { Applicant } from "@/app/lib/definitions";
 
 export default async function ApplicantsTable({
   applicants,
@@ -19,22 +20,28 @@ export default async function ApplicantsTable({
             <div className="overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0">
               {/* Mobile View */}
               <div className="md:hidden">
-                {applicants.map((applicant) => (
+                {applicants.map((applicants) => (
                   <div
-                    key={applicant.id}
+                    key={applicants.id}
                     className="mb-2 w-full rounded-md bg-white p-4"
                   >
                     <div className="border-b pb-4">
-                      <p className="font-medium">{applicant.full_name}</p>
-                      <p className="text-sm text-gray-500">{applicant.email}</p>
+                      <p className="font-medium">{applicants.first_name}</p>
+                      <p className="font-medium">{applicants.last_name}</p>
+                      <p className="text-sm text-gray-500">{applicants.email}</p>
+                      <p className="font-medium">{applicants.phone}</p>
+                      <p className="font-medium">{applicants.resume_url}</p>
+                      <p className="font-medium">
+                        {applicants.application_date}
+                      </p>
                     </div>
-                    <div className="py-4">
-                      <p className="text-xs">Position</p>
-                      <p className="font-medium">{applicant.position_applied}</p>
-                    </div>
+
                     <div className="flex items-center justify-between text-sm">
-                      <p>Status: <span className="font-medium">{applicant.status}</span></p>
-                      <p>{applicant.application_date}</p>
+                      <p>
+                        Status:{" "}
+                        <span className="font-medium">{applicants.status}</span>
+                      </p>
+                      <p>{applicants.application_date}</p>
                     </div>
                   </div>
                 ))}
@@ -65,14 +72,28 @@ export default async function ApplicantsTable({
                   {applicants.map((applicant) => (
                     <tr key={applicant.id} className="group">
                       <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm sm:pl-6">
-                        {applicant.full_name}
+                        {applicant.first_name}
+                      </td>
+                      <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm sm:pl-6">
+                        {applicant.last_name}
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
                         {applicant.email}
                       </td>
-                      <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
-                        {applicant.position_applied}
+                      <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm sm:pl-6">
+                        {applicant.phone}
                       </td>
+                      <td className="whitespace-nowrap bg-white py-5 pl-4 pr-3 text-sm sm:pl-6">
+                        <a
+                          href={applicant.resume_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm font-medium"
+                        >
+                          View Resume
+                        </a>
+                      </td>
+
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
                         {applicant.status}
                       </td>

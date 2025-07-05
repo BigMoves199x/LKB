@@ -13,13 +13,13 @@ import clsx from "clsx";
 const links = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
   {
-    name: "Applications",
-    href: "/dashboard/applications",
+    name: "Applicants",
+    href: "/dashboard/applicants",
     icon: BriefcaseIcon, // Represents job/work
   },
   {
-    name: "Applicants",
-    href: "/dashboard/applicants",
+    name: "Onboarding",
+    href: "/dashboard/onboarding",
     icon: UserGroupIcon,
   },
 ];

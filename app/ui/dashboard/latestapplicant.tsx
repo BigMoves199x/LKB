@@ -19,7 +19,7 @@ export default async function LatestApplications() {
           {latestApplicants.length === 0 ? (
             <p className="py-4 text-sm text-gray-500">No recent applications.</p>
           ) : (
-            latestApplicants.map(({ id, full_name, email, position_applied, status }, i) => (
+            latestApplicants.map(({ id, first_name, last_name, email, status }, i) => (
               <article
                 key={id}
                 className={clsx(
@@ -28,13 +28,12 @@ export default async function LatestApplications() {
                 )}
               >
                 <div className="flex flex-col overflow-hidden">
-                  <p className="text-sm font-semibold md:text-base truncate">{full_name}</p>
+                  <p className="text-sm font-semibold md:text-base truncate">
+                    {first_name} {last_name}
+                  </p>
                   <p className="text-sm text-gray-500 truncate">{email}</p>
                 </div>
                 <div className="flex flex-col text-right min-w-[120px]">
-                  <p className={`${lusitana.className} text-sm font-medium md:text-base truncate`}>
-                    {position_applied}
-                  </p>
                   <span
                     className={clsx(
                       'mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wide',
