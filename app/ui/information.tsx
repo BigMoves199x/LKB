@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import OnboardingForm from "@/app/ui/onboarding-form";
 
 export default function Information() {
   return (
@@ -107,9 +109,16 @@ export default function Information() {
           </div>
         </div>
 
-        <button className="mt-8 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
-          Agreement details
-        </button>
+        <div className="mt-8 space-x-4">
+              <Link
+                href="/onboarding"
+                className="inline-flex items-center gap-2 rounded-md border border-white px-6 py-3 text-white hover:bg-white hover:text-black hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in"
+              >
+               Agreement details
+              </Link>
+            </div>
+
+       
       </section>
     </main>
   );
