@@ -1,7 +1,6 @@
 // app/api/resume/[id]/route.ts
 import { sql } from '@vercel/postgres';
-import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
 export async function GET(req: NextRequest, context: { params: { id: string } }) {
   const { id } = context.params;
@@ -19,11 +18,11 @@ export async function GET(req: NextRequest, context: { params: { id: string } })
       return new NextResponse('Resume not found', { status: 404 });
     }
 
-    return new NextResponse(row.resume_file as Buffer, {
+    return new NextResponse(new Uint8Array(row.resume_file), {
       status: 200,
       headers: {
         'Content-Type': row.resume_mime,
-        'Content-Disposition': 'inline; filename=resume',
+        'Content-Disposition': 'inline; filename="resume"',
         'Cache-Control': 'no-store',
       },
     });
