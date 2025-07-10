@@ -5,6 +5,10 @@ import { lusitana } from "@/app/ui/fonts";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: 'Dashboard',
+};
+
 export default async function DashboardPage() {
   return (
     <main className="min-h-screen -m-8 bg-gray-50 py-10 px-4 sm:px-6 lg:px-4">

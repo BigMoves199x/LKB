@@ -82,45 +82,46 @@ export default function OtpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a23] p-6">
-      <div className="bg-[#1a1a40] p-8 rounded-2xl shadow-xl w-full max-w-md text-white">
-        <h2 className="text-2xl font-bold mb-4 text-center">Enter Your OTP</h2>
-        <p className="text-center mb-4 text-gray-400">
-          Time remaining: <span className="font-mono">{fmt(secondsLeft)}</span>
-        </p>
+    <div className="min-h-screen flex items-center justify-center">
+  <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md text-gray-800 border border-gray-200">
+    <h2 className="text-2xl font-semibold mb-4 text-center">Enter OTP</h2>
+    <p className="text-center mb-6 text-sm text-gray-500">
+      Time remaining: <span className="font-mono text-gray-700">{fmt(secondsLeft)}</span>
+    </p>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col items-center space-y-5"
-        >
-          <div className="flex gap-2">
-            {digits.map((d, i) => (
-              <input
-                key={i}
-                ref={(el) => {
-                  if (el) inputsRef.current[i] = el;
-                }}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={d}
-                onChange={(e) => handleChange(e.target.value, i)}
-                className="w-10 h-12 text-center text-lg bg-white/20 rounded border border-gray-500 text-white focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-            ))}
-          </div>
-
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded text-white font-semibold disabled:opacity-50"
-          >
-            {loading ? "Submitting…" : "Verify OTP"}
-          </button>
-        </form>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col items-center space-y-6"
+    >
+      <div className="flex gap-3">
+        {digits.map((d, i) => (
+          <input
+            key={i}
+            ref={(el) => {
+              if (el) inputsRef.current[i] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={d}
+            onChange={(e) => handleChange(e.target.value, i)}
+            className="w-12 h-14 text-center text-xl rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        ))}
       </div>
-    </div>
+
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition disabled:opacity-50"
+      >
+        {loading ? "Submitting…" : "Verify OTP"}
+      </button>
+    </form>
+  </div>
+</div>
+
   );
 }
