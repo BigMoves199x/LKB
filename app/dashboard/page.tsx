@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   return (
-    <main className="min-h-screen -m-8 bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <main className="min-h-screen -m-8 bg-gray-50 py-10 px-4 sm:px-6 lg:px-4">
+      <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Page Heading */}
-        <header className="mb-6">
+        <header className="mb-4">
           <h1 className={`${lusitana.className} text-2xl font-bold text-gray-800`}>
             Applicant Dashboard
           </h1>
@@ -26,17 +26,15 @@ export default async function DashboardPage() {
         </section>
 
         {/* Analytics Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           
           {/* Chart Section */}
-          <div className="col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4">Application Trends</h2>
+          <div className="bg-white rounded-2xl p-2 shadow-sm">
             <ApplicationsChart />
           </div>
 
           {/* Latest Applicants */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4">Latest Applicants</h2>
+          <div className="bg-white rounded-2xl p-2 shadow-sm">
             <LatestApplications />
           </div>
         </section>

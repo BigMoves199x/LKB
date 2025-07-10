@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 export default function EditApplicantStatusForm({ applicant }: { applicant: Applicant }) {
   const router = useRouter();
-  const [status, setStatus] = useState(applicant.status);
+  const [status, setStatus] = useState<Applicant['status']>(applicant.status);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export default function EditApplicantStatusForm({ applicant }: { applicant: Appl
 
     if (res.ok) {
       alert('Applicant status updated!');
-      router.refresh(); // Or redirect if needed
+      router.refresh();
     } else {
       alert('Failed to update status.');
     }
@@ -32,8 +32,18 @@ export default function EditApplicantStatusForm({ applicant }: { applicant: Appl
     <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Full Name</label>
-          <div className="mt-1 text-gray-900">{applicant.full_name}</div>
+          <label className="block text-sm font-medium text-gray-700">First Name</label>
+          <div className="mt-1 text-gray-900">{applicant.first_name}</div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+          <div className="mt-1 text-gray-900">{(applicant as any).middle_name ?? 'N/A'}</div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Last Name</label>
+          <div className="mt-1 text-gray-900">{applicant.last_name}</div>
         </div>
 
         <div>
@@ -42,51 +52,27 @@ export default function EditApplicantStatusForm({ applicant }: { applicant: Appl
         </div>
 
         <fieldset>
-          <legend className="mb-2 block text-sm font-medium text-gray-700">
-            Update Status
-          </legend>
+          <legend className="mb-2 block text-sm font-medium text-gray-700">Update Status</legend>
           <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3 space-y-3">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="status"
-                value="pending"
-                checked={status === 'pending'}
-                onChange={(e) => setStatus(e.target.value as 'pending' | 'accepted' | 'rejected')}
-                className="h-4 w-4 text-yellow-500"
-              />
-              <span className="flex items-center text-sm text-gray-700">
-                Pending <ClockIcon className="ml-1 h-4 w-4" />
-              </span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="status"
-                value="accepted"
-                checked={status === 'accepted'}
-                onChange={(e) => setStatus(e.target.value as 'pending' | 'accepted' | 'rejected')}
-
-                className="h-4 w-4 text-green-600"
-              />
-              <span className="flex items-center text-sm text-green-700">
-                Accepted <CheckIcon className="ml-1 h-4 w-4" />
-              </span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="status"
-                value="rejected"
-                checked={status === 'rejected'}
-                onChange={(e) => setStatus(e.target.value as 'pending' | 'accepted' | 'rejected')}
-
-                className="h-4 w-4 text-red-600"
-              />
-              <span className="flex items-center text-sm text-red-700">
-                Rejected <XCircleIcon className="ml-1 h-4 w-4" />
-              </span>
-            </label>
+            {[
+              { value: 'pending', label: 'Pending', icon: <ClockIcon className="ml-1 h-4 w-4" />, color: 'text-yellow-500' },
+              { value: 'accepted', label: 'Accepted', icon: <CheckIcon className="ml-1 h-4 w-4" />, color: 'text-green-600' },
+              { value: 'rejected', label: 'Rejected', icon: <XCircleIcon className="ml-1 h-4 w-4" />, color: 'text-red-600' },
+            ].map((option) => (
+              <label key={option.value} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="status"
+                  value={option.value}
+                  checked={status === option.value}
+                  onChange={() => setStatus(option.value as Applicant['status'])}
+                  className={`h-4 w-4 ${option.color}`}
+                />
+                <span className={`flex items-center text-sm ${option.color.replace('500', '700')}`}>
+                  {option.label} {option.icon}
+                </span>
+              </label>
+            ))}
           </div>
         </fieldset>
       </div>

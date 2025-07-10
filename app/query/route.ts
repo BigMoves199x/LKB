@@ -1,8 +1,10 @@
+import { NextResponse } from 'next/server';
 import postgres from 'postgres';
 
-// Use a typed SQL client
+// Initialize typed Postgres client
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
+// Define the expected return shape
 type ApplicantPreview = {
   id: string;
   first_name: string;
@@ -14,8 +16,9 @@ type ApplicantPreview = {
   application_date: string;
 };
 
+// Fetch all applicants with 'pending' status
 async function listPendingApplicants(): Promise<ApplicantPreview[]> {
-  const rows = await sql<ApplicantPreview[]>`
+  return await sql<ApplicantPreview[]>`
     SELECT 
       id,
       first_name,
@@ -29,21 +32,20 @@ async function listPendingApplicants(): Promise<ApplicantPreview[]> {
     WHERE status = 'pending'
     ORDER BY application_date DESC
   `;
-  return rows;
 }
 
+// Handle GET request
 export async function GET() {
   try {
     const applicants = await listPendingApplicants();
-    return new Response(JSON.stringify(applicants), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+
+    return NextResponse.json(applicants, { status: 200 });
   } catch (error) {
-    console.error('Error fetching applicants:', error);
-    return new Response(JSON.stringify({ error: 'Something went wrong' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error('[GET /api/query] Failed to fetch applicants:', error);
+
+    return NextResponse.json(
+      { error: 'Internal Server Error: Could not retrieve applicants.' },
+      { status: 500 }
+    );
   }
 }

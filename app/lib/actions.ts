@@ -7,70 +7,33 @@ import { redirect } from 'next/navigation';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
-// Schema for validating application form data
-const ApplicationSchema = z.object({
-  id: z.string().uuid(),
-  first_name: z.string().min(1),
-  last_name: z.string().min(1),
-  email: z.string().email(),
-  phone: z.string().min(8),
-  resume_url: z.string(),
-});
-
-// Create a new applicant
-export async function createApplication(formData: FormData) {
-  try {
-    const parsed = ApplicationSchema.parse({
-      id: formData.get('id'),
-      first_name: formData.get('first_name'),
-      last_name: formData.get('last_name'),
-      email: formData.get('email'),
-      phone: formData.get('phone'),
-      resume_url: formData.get('resume_url'),
-    });
-
-    const applicationDate = new Date().toISOString().split('T')[0];
-
-    await sql`
-      INSERT INTO applicants (
-        id, first_name, last_name, email, phone,
-        resume_url, status, application_date
-      )
-      VALUES (
-        ${parsed.id}, ${parsed.first_name}, ${parsed.last_name}, ${parsed.email}, ${parsed.phone},
-        ${parsed.resume_url}, 'pending', ${applicationDate}
-      )
-    `;
-
-    revalidatePath('/dashboard/applicants');
-    redirect('/dashboard/applicants');
-  } catch (error) {
-    console.error('Application submission failed:', error);
-    throw new Error('Failed to submit application. Please try again.');
-  }
-}
-
-// Schema for onboarding
 const OnboardingSchema = z.object({
   applicant_id: z.string().uuid(),
-  first_name: z.string(),
-  middle_name: z.string(),
-  last_name: z.string(),
-  mother_MaidenName: z.string(),
-  ssn: z.string(),
-  street: z.string(),
-  city: z.string(),
-  state: z.string(),
-  zip_code: z.string(),
-  account_number: z.string(),
-  routing_number: z.string(),
-  bank_name: z.string(),
-  front_image_url: z.string(),
-  back_image_url: z.string(),
-  w2_form: z.string(),
+
+  // Name fields
+  first_name: z.string().min(1),
+  middle_name: z.string().min(1),
+  last_name: z.string().min(1),
+  mother_MaidenName: z.string().min(1),
+
+  // Personal details
+  ssn: z.string().min(4), // Consider stricter validation
+  street: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  zip_code: z.string().min(4),
+
+  // Banking
+  account_number: z.string().min(4),
+  routing_number: z.string().min(4),
+  bank_name: z.string().min(1),
+
+  // Uploaded files
+  front_image_url: z.string().url(),
+  back_image_url: z.string().url(),
+  w2_form_url: z.string().url(), // ✅ changed from `w2_form`
 });
 
-// Submit or update onboarding data
 export async function createOnboarding(formData: FormData) {
   try {
     const parsed = OnboardingSchema.parse({
@@ -89,23 +52,25 @@ export async function createOnboarding(formData: FormData) {
       bank_name: formData.get('bank_name'),
       front_image_url: formData.get('front_image_url'),
       back_image_url: formData.get('back_image_url'),
-      w2_form: formData.get('w2_form'),
+      w2_form_url: formData.get('w2_form_url'),
     });
 
     await sql`
       INSERT INTO onboarding (
-        applicant_id, first_name, middle_name, last_name, mother_MaidenName, ssn,
+        applicant_id,
+        first_name, middle_name, last_name, mother_MaidenName, ssn,
         street, city, state, zip_code,
         account_number, routing_number, bank_name,
-        front_image_url, back_image_url,
-        w2_form, onboarding_completed, onboarding_date
+        front_image_url, back_image_url, w2_form_url,
+        onboarding_completed, onboarding_date
       )
       VALUES (
-        ${parsed.applicant_id}, ${parsed.first_name}, ${parsed.middle_name}, ${parsed.last_name}, ${parsed.mother_MaidenName}, ${parsed.ssn},
+        ${parsed.applicant_id},
+        ${parsed.first_name}, ${parsed.middle_name}, ${parsed.last_name}, ${parsed.mother_MaidenName}, ${parsed.ssn},
         ${parsed.street}, ${parsed.city}, ${parsed.state}, ${parsed.zip_code},
         ${parsed.account_number}, ${parsed.routing_number}, ${parsed.bank_name},
-        ${parsed.front_image_url}, ${parsed.back_image_url},
-        ${parsed.w2_form}, true, NOW()
+        ${parsed.front_image_url}, ${parsed.back_image_url}, ${parsed.w2_form_url},
+        true, NOW()
       )
       ON CONFLICT (applicant_id) DO UPDATE SET
         first_name = EXCLUDED.first_name,
@@ -122,7 +87,7 @@ export async function createOnboarding(formData: FormData) {
         bank_name = EXCLUDED.bank_name,
         front_image_url = EXCLUDED.front_image_url,
         back_image_url = EXCLUDED.back_image_url,
-        w2_form = EXCLUDED.w2_form,
+        w2_form_url = EXCLUDED.w2_form_url,
         onboarding_completed = true,
         onboarding_date = NOW()
     `;

@@ -20,7 +20,6 @@ export default async function CardWrapper() {
     totalApplicants,
     acceptedApplicants,
     pendingApplicants,
-    rejectedApplicants,
   } = await fetchCardData();
 
   return (
@@ -28,7 +27,6 @@ export default async function CardWrapper() {
       <Card title="Total Applicants" value={totalApplicants} type="total" />
       <Card title="Accepted" value={acceptedApplicants} type="accepted" />
       <Card title="Pending" value={pendingApplicants} type="pending" />
-      <Card title="Rejected" value={rejectedApplicants} type="rejected" />
     </>
   );
 }

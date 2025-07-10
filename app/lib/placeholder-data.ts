@@ -12,7 +12,7 @@ const users = [
 
 const applicants = [
   {
-    id: 'a1',
+    id: "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa", // ✅ valid
     first_name: 'Jane',
     last_name: 'Smith',
     email: 'jane.doe@example.com',
@@ -22,7 +22,7 @@ const applicants = [
     application_date: '2025-06-10',
   },
   {
-    id: 'a2',
+    id: "b134a7e0-9b60-4dd7-82b0-3ef4590c2a4e", // ✅ replaced with valid
     first_name: 'John',
     last_name: 'Coal',
     email: 'john.smith@example.com',
@@ -32,7 +32,7 @@ const applicants = [
     application_date: '2025-06-12',
   },
   {
-    id: 'a3',
+    id: "a7e8f7c0-68b0-4f9b-93cb-7d4a741f8eaa", // ✅ valid
     first_name: 'Emily',
     last_name: 'Johnson',
     email: 'emily.j@example.com',
@@ -45,17 +45,17 @@ const applicants = [
 
 const onboarding = [
   {
-    applicant_id: 'a2',
+    applicant_id: 'a7e8f7c0-68b0-4f9b-93cb-7d4a741f8eaa', // ✅ matches Emily
     first_name: 'Emily',
     middle_name: 'Johnson',
     last_name: 'Smith',
     mother_MaidenName: 'Grace',
     address: {
-    street: '',
-    city: '',
-    state: '',
-    zip_code: '',
-  },
+      street: '',
+      city: '',
+      state: '',
+      zip_code: '',
+    },
     ssn: '123-12-9484',
     bank_account: {
       account_number: '987654321',
@@ -70,14 +70,10 @@ const onboarding = [
     onboarding_completed: true,
     onboarding_date: '2025-06-20',
   },
-
-  
 ];
 
+
 const monthlyStats = [
-  { month: 'Jan', applications: 15 },
-  { month: 'Feb', applications: 22 },
-  { month: 'Mar', applications: 30 },
   { month: 'Apr', applications: 18 },
   { month: 'May', applications: 27 },
   { month: 'Jun', applications: 35 },

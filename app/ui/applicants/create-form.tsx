@@ -7,7 +7,6 @@ import {
   BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { ApplicationForm } from "@/app/lib/definitions";
 import { Button } from "@/app/ui/button";
 import Link from "next/link";
 
@@ -20,26 +19,10 @@ export default function ApplicationFormComponent() {
 
     const formData = new FormData(e.currentTarget);
 
-    const applicationData: ApplicationForm = {
-      full_name: formData.get("full_name") as string,
-      email: formData.get("email") as string,
-      phone: formData.get("phone") as string,
-      date_of_birth: formData.get("date_of_birth") as string,
-      address: {
-        street: formData.get("street") as string,
-        city: formData.get("city") as string,
-        state: formData.get("state") as string,
-        zip_code: formData.get("zip_code") as string,
-      },
-      ssn: formData.get("ssn") as string,
-      position_applied: formData.get("position_applied") as string,
-      resume_file: formData.get("resume_file") as File,
-    };
-
     try {
       const res = await fetch("/api/apply", {
         method: "POST",
-        body: formData, // send entire FormData to preserve files
+        body: formData, // send formData including the file
       });
 
       if (!res.ok) throw new Error("Failed to submit application");
@@ -185,9 +168,9 @@ export default function ApplicationFormComponent() {
             type="file"
             required
             className="block w-full text-sm text-gray-500"
+            accept=".pdf,.doc,.docx"
           />
         </div>
-
       </div>
 
       <div className="mt-6 flex justify-end gap-4">

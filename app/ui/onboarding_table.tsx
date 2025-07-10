@@ -19,57 +19,43 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
           {/* Mobile View */}
           <div className="md:hidden space-y-4">
             {onboardings.map((record) => (
-              <div key={record.applicant_id} className="rounded-md bg-white p-4 shadow-sm">
-                <div className="flex justify-between items-start border-b pb-2">
-                  <div className="space-y-1">
-                    <p className="font-semibold">
-                      {record.applicant_first_name} {record.applicant_last_name}
-                    </p>
-                    <p className="text-sm text-gray-500">{record.email}</p>
-                    <p className="text-sm text-gray-500">{record.phone}</p>
-                    <p className="text-sm text-gray-500">
-                      {formatDateToLocal(record.onboarding_date)}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Address: {record.street}, {record.city}, {record.state} {record.zip_code}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Bank: {record.bank_name} (Acct: {record.account_number})
-                    </p>
-                    <a
-                      href={record.resume_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 underline"
-                    >
-                      View Resume
-                    </a>
-                  </div>
-                  <div className="ml-4 flex flex-col items-end space-y-2">
-                    <ApplicantStatus status={record.status} />
-                    <a
-                      href={record.front_image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-gray-600 underline"
-                    >
-                      ID Front
-                    </a>
-                    <a
-                      href={record.back_image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-gray-600 underline"
-                    >
-                      ID Back
-                    </a>
-                  </div>
+              <div key={record.applicant_id} className="rounded-md bg-white p-4 shadow-sm space-y-2">
+                <div className="font-semibold text-lg">
+                  {record.applicant_first_name} {record.applicant_last_name}
                 </div>
+                <p className="text-sm text-gray-600">{record.email}</p>
+                <p className="text-sm text-gray-600">{record.phone}</p>
+                <p className="text-sm text-gray-600">{formatDateToLocal(record.onboarding_date)}</p>
+                <p className="text-sm text-gray-600">
+                  {record.street}, {record.city}, {record.state} {record.zip_code}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Bank: {record.bank_name || "—"} (Acct: {record.account_number || "—"})
+                </p>
+                <div className="text-sm flex flex-wrap gap-3 mt-2">
+                  {record.resume_url && (
+                    <a href={record.resume_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      Resume
+                    </a>
+                  )}
+                  <a href={record.front_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    Front ID
+                  </a>
+                  <a href={record.back_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    Back ID
+                  </a>
+                  {record.w2_form_url && (
+                    <a href={record.w2_form_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                      W2 Form
+                    </a>
+                  )}
+                </div>
+                <ApplicantStatus status={record.status} />
               </div>
             ))}
           </div>
 
-          {/* Desktop View */}
+          {/* Desktop Table */}
           <table className="hidden min-w-full text-sm text-gray-900 md:table">
             <thead className="text-left text-gray-700 font-semibold border-b">
               <tr>
@@ -79,12 +65,9 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                 <th className="px-3 py-3">Resume</th>
                 <th className="px-3 py-3">Address</th>
                 <th className="px-3 py-3">Bank Info</th>
-                <th className="px-3 py-3">ID Documents</th>
+                <th className="px-3 py-3">Documents</th>
                 <th className="px-3 py-3">Onboarding Date</th>
-                <th className="px-3 py-3">Status</th>
-                <th className="py-3 pl-6 pr-3 text-right">
-                  <span className="sr-only">Actions</span>
-                </th>
+               
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -96,53 +79,41 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                   <td className="px-3 py-3 whitespace-nowrap">{record.email}</td>
                   <td className="px-3 py-3 whitespace-nowrap">{record.phone}</td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <a
-                      href={record.resume_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                      title="Open resume in new tab"
-                    >
-                      View Resume
-                    </a>
+                    {record.resume_url ? (
+                      <a href={record.resume_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        Resume
+                      </a>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     {record.street}, {record.city}, {record.state} {record.zip_code}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    {record.bank_name} <br />
-                    Acct: {record.account_number} <br />
-                    Routing: {record.routing_number}
+                    {record.bank_name || "—"}
+                    <br />
+                    Acct: {record.account_number || "—"}
+                    <br />
+                    Routing: {record.routing_number || "—"}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap space-x-2">
-                    <a
-                      href={record.front_image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                      title="View front ID"
-                    >
-                      Front ID
+                    <a href={record.front_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      Front
                     </a>
-                    <a
-                      href={record.back_image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                      title="View back ID"
-                    >
-                      Back ID
+                    <a href={record.back_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      Back
                     </a>
+                    {record.w2_form_url && (
+                      <a href={record.w2_form_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        W2
+                      </a>
+                    )}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     {formatDateToLocal(record.onboarding_date)}
                   </td>
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    <ApplicantStatus status={record.status} />
-                  </td>
-                  <td className="py-3 pl-6 pr-3 text-right text-gray-500">
-                    {/* Placeholder for future actions */}
-                  </td>
+                
                 </tr>
               ))}
             </tbody>

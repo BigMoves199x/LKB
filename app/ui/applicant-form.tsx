@@ -11,7 +11,7 @@ export default function ApplicantForm() {
     last_name: '',
     email: '',
     phone: '',
-    resume_url: null as File | null,
+    resume: null as File | null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +31,7 @@ export default function ApplicantForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.resume_url) {
+    if (!form.resume) {
       alert('Please upload your resume.');
       return;
     }
@@ -43,10 +43,10 @@ export default function ApplicantForm() {
     formData.append('last_name', form.last_name);
     formData.append('email', form.email);
     formData.append('phone', form.phone);
-    formData.append('resume_url', form.resume_url);
+    formData.append('resume', form.resume);
 
     try {
-      const res = await fetch('/api', {
+      const res = await fetch('/api/apply', {
         method: 'POST',
         body: formData,
       });
