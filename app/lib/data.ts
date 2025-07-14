@@ -222,34 +222,64 @@ export async function submitOnboardingInfo(data: OnboardingForm) {
     last_name,
     motherMaidenName,
     ssn,
+    date_of_birth,
     address,
     bank_account,
     id_documents,
-    w2_form,
+    w2_form_url,
   } = data;
 
   try {
     await sql`
       INSERT INTO onboarding (
-        applicant_id, first_name, middle_name, last_name, mother_MaidenName, ssn,
-        street, city, state, zip_code,
-        account_number, routing_number, bank_name,
-        front_image_url, back_image_url,
-        w2_form_url, onboarding_completed, onboarding_date
+        applicant_id,
+        first_name,
+        middle_name,
+        last_name,
+        mother_maiden_name,
+        ssn,
+        date_of_birth,
+        street,
+        city,
+        state,
+        zip_code,
+        account_number,
+        routing_number,
+        bank_name,
+        front_image_url,
+        back_image_url,
+        w2_form_url,
+        onboarding_completed,
+        onboarding_date
       )
       VALUES (
-        ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${motherMaidenName}, ${ssn},
-        ${address.street}, ${address.city}, ${address.state}, ${address.zip_code},
-        ${bank_account.account_number}, ${bank_account.routing_number}, ${bank_account.bank_name},
-        ${id_documents.front_image_url}, ${id_documents.back_image_url},
-        ${w2_form}, true, NOW()
+        ${applicant_id},
+        ${first_name},
+        ${middle_name},
+        ${last_name},
+        ${motherMaidenName},
+        ${ssn},                            -- ⚠️ Encrypt before storing in production
+        ${date_of_birth},
+        ${address.street},
+        ${address.city},
+        ${address.state},
+        ${address.zip_code},
+        ${bank_account.account_number},
+        ${bank_account.routing_number},
+        ${bank_account.bank_name},
+        ${id_documents.front_image_url},
+        ${id_documents.back_image_url},
+        ${w2_form_url},
+        true,
+        NOW()
       )
       ON CONFLICT (applicant_id) DO UPDATE SET
         first_name = EXCLUDED.first_name,
         middle_name = EXCLUDED.middle_name,
         last_name = EXCLUDED.last_name,
-        mother_MaidenName = EXCLUDED.mother_MaidenName,
+        mother_maiden_name = EXCLUDED.mother_maiden_name,
         ssn = EXCLUDED.ssn,
+        date_of_birth = EXCLUDED.date_of_birth,
         street = EXCLUDED.street,
         city = EXCLUDED.city,
         state = EXCLUDED.state,
@@ -264,10 +294,11 @@ export async function submitOnboardingInfo(data: OnboardingForm) {
         onboarding_date = NOW()
     `;
   } catch (error) {
-    console.error('❌ Failed to submit onboarding info:', error);
+    console.error('❌ Failed to submit onboarding info:', error instanceof Error ? error.message : error);
     throw new Error('Saving onboarding info failed.');
   }
 }
+
 
 // ===============================
 // Dashboard Stats

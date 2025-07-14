@@ -24,11 +24,12 @@ export default async function ApplicantsTable({
     <section className="mt-6">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
-
           {/* ✅ Mobile View */}
           <div className="md:hidden space-y-4">
             {applicants.map((applicant) => {
-              const formattedDate = formatDateToLocal(applicant.application_date);
+              const formattedDate = formatDateToLocal(
+                applicant.application_date
+              );
 
               return (
                 <div
@@ -44,12 +45,12 @@ export default async function ApplicantsTable({
                       <p className="text-sm text-gray-500">{applicant.phone}</p>
                       <p className="text-sm text-gray-500">{formattedDate}</p>
                       <a
-                        href={applicant.resume_url}
+                        href={`/api/resume/${applicant.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-600 underline"
+                        className="text-blue-600 hover:underline"
                       >
-                        View Resume
+                        Resume
                       </a>
                       <a
                         href={`/onboarding/${applicant.id}`}
@@ -88,15 +89,24 @@ export default async function ApplicantsTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {applicants.map((applicant) => {
-                const formattedDate = formatDateToLocal(applicant.application_date);
+                const formattedDate = formatDateToLocal(
+                  applicant.application_date
+                );
 
                 return (
-                  <tr key={applicant.id} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={applicant.id}
+                    className="hover:bg-gray-50 transition"
+                  >
                     <td className="py-3 pl-6 pr-3 whitespace-nowrap font-medium">
                       {applicant.first_name} {applicant.last_name}
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap">{applicant.email}</td>
-                    <td className="px-3 py-3 whitespace-nowrap">{applicant.phone}</td>
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {applicant.email}
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {applicant.phone}
+                    </td>
                     <td className="px-3 py-3 whitespace-nowrap">
                       <a
                         href={`/api/resume/${applicant.id}`}
@@ -107,7 +117,9 @@ export default async function ApplicantsTable({
                         View Resume
                       </a>
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap">{formattedDate}</td>
+                    <td className="px-3 py-3 whitespace-nowrap">
+                      {formattedDate}
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <StatusDropdown
                         id={applicant.id}

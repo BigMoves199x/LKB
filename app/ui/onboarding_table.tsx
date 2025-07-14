@@ -25,7 +25,9 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                 </div>
                 <p className="text-sm text-gray-600">{record.email}</p>
                 <p className="text-sm text-gray-600">{record.phone}</p>
-                <p className="text-sm text-gray-600">{formatDateToLocal(record.onboarding_date)}</p>
+                <p className="text-sm text-gray-600">
+                  {record.onboarding_date ? formatDateToLocal(record.onboarding_date) : "—"}
+                </p>
                 <p className="text-sm text-gray-600">
                   {record.street}, {record.city}, {record.state} {record.zip_code}
                 </p>
@@ -33,19 +35,30 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                   Bank: {record.bank_name || "—"} (Acct: {record.account_number || "—"})
                 </p>
                 <div className="text-sm flex flex-wrap gap-3 mt-2">
-                  {record.resume_url && (
-                    <a href={record.resume_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                      Resume
-                    </a>
-                  )}
-                  <a href={record.front_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  
+                  <a
+                    href={`/api/file/${record.applicant_id}/front`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
                     Front ID
                   </a>
-                  <a href={record.back_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                  <a
+                    href={`/api/file/${record.applicant_id}/back`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
                     Back ID
                   </a>
                   {record.w2_form_url && (
-                    <a href={record.w2_form_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                    <a
+                      href={`/api/file/${record.applicant_id}/w2`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
                       W2 Form
                     </a>
                   )}
@@ -62,12 +75,10 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                 <th className="px-4 py-3 sm:pl-6">Name</th>
                 <th className="px-3 py-3">Email</th>
                 <th className="px-3 py-3">Phone</th>
-                <th className="px-3 py-3">Resume</th>
                 <th className="px-3 py-3">Address</th>
                 <th className="px-3 py-3">Bank Info</th>
                 <th className="px-3 py-3">Documents</th>
                 <th className="px-3 py-3">Onboarding Date</th>
-               
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -78,15 +89,7 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">{record.email}</td>
                   <td className="px-3 py-3 whitespace-nowrap">{record.phone}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">
-                    {record.resume_url ? (
-                      <a href={record.resume_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                        Resume
-                      </a>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
+                 
                   <td className="px-3 py-3 whitespace-nowrap">
                     {record.street}, {record.city}, {record.state} {record.zip_code}
                   </td>
@@ -98,22 +101,36 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                     Routing: {record.routing_number || "—"}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap space-x-2">
-                    <a href={record.front_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={`/api/file/${record.applicant_id}/front`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       Front
                     </a>
-                    <a href={record.back_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a
+                      href={`/api/file/${record.applicant_id}/back`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
                       Back
                     </a>
                     {record.w2_form_url && (
-                      <a href={record.w2_form_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                      <a
+                        href={`/api/file/${record.applicant_id}/w2`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
                         W2
                       </a>
                     )}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    {formatDateToLocal(record.onboarding_date)}
+                    {record.onboarding_date ? formatDateToLocal(record.onboarding_date) : "—"}
                   </td>
-                
                 </tr>
               ))}
             </tbody>

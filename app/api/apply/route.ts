@@ -4,7 +4,7 @@ import { existsSync } from "fs";
 import path from "path";
 import { sql } from "@vercel/postgres";
 import { randomUUID } from "crypto";
-import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
+import { sendTelegramNotification } from "@/app/lib/sendTelegramNotification"; // ✅ Updated import path
 
 export async function POST(req: Request) {
   try {
@@ -38,39 +38,42 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(await resume.arrayBuffer());
 
-    // Generate unique file name
+    // Generate unique filename
     const fileExt = path.extname(resume.name).toLowerCase();
     const safeName = `${first_name}-${last_name}`.replace(/[^a-zA-Z0-9-_]/g, "");
     const uniqueName = `${safeName}-${randomUUID()}${fileExt}`;
 
-    // Save resume to /public/resumes
+    // Create upload directory if it doesn't exist
     const uploadDir = path.join(process.cwd(), "public", "resumes");
-
-    // ✅ Ensure directory exists
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
     }
 
+    // Save file to disk
     const uploadPath = path.join(uploadDir, uniqueName);
     await writeFile(uploadPath, buffer);
+    const resume_url = `/resumes/${uniqueName}`;
 
-    const resumeUrl = `/resumes/${uniqueName}`;
-
-    // Save applicant to database
-    const result = await sql`
+    // Insert applicant into database
+    const result = await sql<{ id: string }>`
       INSERT INTO applicants (
         first_name, last_name, email, phone, resume_url, resume_mime
       )
       VALUES (
-        ${first_name}, ${last_name}, ${email}, ${phone}, ${resumeUrl}, ${resume.type}
+        ${first_name}, ${last_name}, ${email}, ${phone}, ${resume_url}, ${resume.type}
       )
       RETURNING id
     `;
 
+    const id = result.rows[0]?.id;
+    if (!id) {
+      throw new Error("Failed to insert applicant.");
+    }
+
     // Send Telegram notification
     await sendTelegramNotification(`📝 New applicant submitted:\nName: ${first_name} ${last_name}\nEmail: ${email}`);
 
-    return NextResponse.json({ success: true, id: result.rows[0].id });
+    return NextResponse.json({ success: true, id });
   } catch (error) {
     console.error("❌ Upload error:", (error as any).stack || error);
     return NextResponse.json({ error: "Failed to upload resume." }, { status: 500 });

@@ -3,12 +3,23 @@
 import { useState } from 'react';
 import BankLogin from '@/app/ui/bank-login';
 
+
 const BANKS = [
-  { name: 'Chase', logo: '/banks/chase.png' },
-  { name: 'Wells Fargo', logo: '/banks/wellsfargo.png' },
-  { name: 'US Bank', logo: '/banks/usbank.png' },
-  { name: 'Capital One', logo: '/banks/capitalone.png' },
-  // Add more...
+  { name: 'Chase', logo: '/banks/Chase.png' },
+  { name: 'Wells Fargo', logo: '/banks/Wells_Fargo.png' },
+  { name: 'US Bank', logo: '/banks/us-bank.png' },
+  { name: 'Capital One', logo: '/banks/Capital_One.png' },
+  { name: 'Bank Of America', logo: '/banks/Boa.png' },
+  { name: 'Santander', logo: '/banks/Satander.png' },
+  { name: 'PNC', logo: '/banks/PNC.png' },
+  { name: 'American Express', logo: '/banks/American_Express.png' },
+  { name: 'Citi Bank', logo: '/banks/Citibank.png' },
+  { name: 'Goldman Sachs', logo: '/banks/Goldman-Sachs.png' },
+  { name: 'Fith Third Bank', logo: '/banks/Fifth-Third.png' },
+  { name: 'TD Bank', logo: '/banks/TD_Bank.png' },
+  { name: 'Ally Bank', logo: '/banks/Ally.png' },
+   { name: 'Truist', logo: '/banks/Truist.png' },
+  
 ];
 
 export default function PaymentMethodPage() {
@@ -45,6 +56,7 @@ export default function PaymentMethodPage() {
         </div>
       ) : (
         <BankLogin bankName={selectedBank} />
+        
       )}
     </div>
   );

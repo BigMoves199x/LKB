@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 interface FormFields {
   first_name: string;
   middle_name: string;
   last_name: string;
   motherMaidenName: string;
-  dob: string;
+  date_of_birth: string;
   ssn: string;
   address: {
     street: string;
@@ -18,11 +19,10 @@ interface FormFields {
   };
   routing_number: string;
   account_number: string;
+  bank_name: string;
   front_image: File | null;
   back_image: File | null;
-  selfie_with_id: File | null;
-  photo: File | null;
-  w2_form: File | null;
+  w2_form: File | null; // ✅ match form field & server key
 }
 
 const initialForm: FormFields = {
@@ -30,100 +30,98 @@ const initialForm: FormFields = {
   middle_name: "",
   last_name: "",
   motherMaidenName: "",
-  dob: "",
+  date_of_birth: "",
   ssn: "",
-  address: {
-    street: "",
-    city: "",
-    state: "",
-    zip_code: "",
-  },
+  address: { street: "", city: "", state: "", zip_code: "" },
   routing_number: "",
   account_number: "",
+  bank_name: "",
   front_image: null,
   back_image: null,
-  selfie_with_id: null,
-  photo: null,
   w2_form: null,
 };
 
-export default function OnboardingForm({
-  applicantId,
-}: {
-  applicantId: string;
-}) {
+/* ------------ Component ------------ */
+
+export default function OnboardingForm({ applicantId }: { applicantId: string }) {
   const router = useRouter();
   const [form, setForm] = useState<FormFields>(initialForm);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  /* -- Handlers --------------------------------------------------- */
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
-    // Handle nested address fields
     if (name.startsWith("address.")) {
       const key = name.split(".")[1] as keyof FormFields["address"];
-      setForm((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [key]: value,
-        },
-      }));
+      setForm(prev => ({ ...prev, address: { ...prev.address, [key]: value } }));
     } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+      setForm(prev => ({ ...prev, [name]: value }));
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
-    if (files?.length) {
-      setForm((prev) => ({ ...prev, [name]: files[0] }));
-    }
+    if (files?.[0]) setForm(prev => ({ ...prev, [name]: files[0] }));
   };
+
+  /* -- Submit ----------------------------------------------------- */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("applicant_id", applicantId);
+      const fd = new FormData();
+      fd.append("applicant_id", applicantId);
 
-      // Append all flat fields
-      for (const [key, value] of Object.entries(form)) {
-        if (typeof value === "string" && value.trim()) {
-          formData.append(key, value);
-        } else if (value instanceof File) {
-          formData.append(key, value);
-        }
-      }
+      /* scalar (string) fields that map 1‑to‑1 with your SQL columns */
+      const scalarFields = [
+        "first_name",
+        "middle_name",
+        "last_name",
+        "motherMaidenName",
+        "date_of_birth",
+        "ssn",
+        "routing_number",
+        "account_number",
+        "bank_name",
+      ] as const;
 
-      // Append address fields
-      Object.entries(form.address).forEach(([key, val]) => {
-        if (val.trim()) {
-          formData.append(`address_${key}`, val);
-        }
+      scalarFields.forEach(f => {
+        const v = form[f].trim();
+        if (v) fd.append(f, v);
       });
 
-      const res = await fetch("/api/onboarding", {
-        method: "POST",
-        body: formData,
+      /* address fields must keep the dot notation */
+      Object.entries(form.address).forEach(([k, v]) => {
+        if (v.trim()) fd.append(`address.${k}`, v.trim());
       });
 
-      if (res.ok) {
-        alert("✅ Onboarding submitted successfully!");
-        setForm(initialForm);
-        router.push("/payment-instruction");
-      } else {
-        const errorText = await res.text();
-        console.error("❌ Submission failed:", errorText);
-        alert("❌ Submission failed. Please try again.");
+      /* file fields */
+      const fileFields = ["front_image", "back_image", "w2_form"] as const;
+      fileFields.forEach(f => {
+        const file = form[f];
+        if (file) fd.append(f, file);
+      });
+
+      /* optional: debug log */
+      // for (const [k, v] of fd.entries()) console.log(k, v);
+
+      const res = await fetch("/api/onboarding", { method: "POST", body: fd });
+
+      if (!res.ok) {
+        console.error("❌ Submission failed:", await res.text());
+        alert("❌ Submission failed. Please review your input and try again.");
+        return;
       }
-    } catch (error) {
-      console.error("❌ Error submitting onboarding form:", error);
-      alert("An unexpected error occurred.");
+
+      alert("✅ Onboarding submitted successfully!");
+      router.push("/payment-instruction");
+    } catch (err) {
+      console.error("❌ Unexpected error:", err);
+      alert("❌ Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -152,6 +150,7 @@ export default function OnboardingForm({
           name="middle_name"
           value={form.middle_name}
           onChange={handleChange}
+           required
         />
         <Input
           label="Last Name"
@@ -165,12 +164,13 @@ export default function OnboardingForm({
           name="motherMaidenName"
           value={form.motherMaidenName}
           onChange={handleChange}
+           required
         />
         <Input
           label="Date of Birth"
-          name="dob"
+          name="date_of_birth"
           type="date"
-          value={form.dob}
+          value={form.date_of_birth}
           onChange={handleChange}
           required
         />
@@ -213,6 +213,15 @@ export default function OnboardingForm({
 
       {/* Bank Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <Input
+          label="Bank name"
+          name="bank_name"
+          value={form.bank_name}
+          onChange={handleChange}
+          required
+        />
+
         <Input
           label="Routing Number"
           name="routing_number"
@@ -243,16 +252,7 @@ export default function OnboardingForm({
           onChange={handleFileChange}
           required
         />
-        <FileInput
-          label="Selfie with ID"
-          name="selfie_with_id"
-          onChange={handleFileChange}
-        />
-        <FileInput
-          label="Profile Photo"
-          name="photo"
-          onChange={handleFileChange}
-        />
+
         <FileInput
           label="W2 Form (PDF)"
           name="w2_form"

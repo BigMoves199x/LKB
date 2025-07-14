@@ -13,7 +13,7 @@ export type Applicant = {
 
 // Preview used in list views
 export type ApplicantPreview = {
-  resume_url: string | undefined;
+  resumes_url: string | undefined;
   id: string;
   first_name: string;
   last_name: string;
@@ -44,6 +44,7 @@ export type OnboardingForm = {
   last_name: string;
   motherMaidenName: string;
   ssn: string;
+  date_of_birth: string;
   address: {
     street: string;
     city: string;
@@ -59,7 +60,7 @@ export type OnboardingForm = {
     front_image_url: string;
     back_image_url: string;
   };
-  w2_form: string; // now a file URL
+  w2_form_url: string; // now a file URL
 };
 
 // DB or API response object
@@ -97,7 +98,7 @@ export type OnboardingDashboardRecord = {
   applicant_last_name: string;
   email: string;
   phone: string;
-  resume_url: string;
+  resumes_url: string;
   status: string;
   street: string;
   city: string;
