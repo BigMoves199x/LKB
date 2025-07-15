@@ -3,39 +3,59 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm text-gray-600">
-       <img src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-dark.svg" alt="" />
-        {/* Navigation */}
-        <div className="space-y-2">
-          <h3 className="text-gray-800 font-medium">Navigation</h3>
-          <ul className="space-y-1">
-            <li>
-              <Link href="/" className="hover:text-gray-900 transition">Home</Link>
-            </li>
-            <li>
-              <Link href="/apply" className="hover:text-gray-900 transition">Apply</Link>
-            </li>
-            <li>
-              <Link href="/about" className="hover:text-gray-900 transition">About</Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-gray-900 transition">Contact</Link>
-            </li>
+    <footer className="bg-[#05273D] text-gray-300 text-sm">
+      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/* Logo and Description */}
+        <div className="space-y-4">
+          <Image
+            src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-light.svg"
+            alt="Vaco Logo"
+            width={120}
+            height={30}
+            className=""
+          />
+          <p className="text-gray-400 leading-relaxed">
+            Vaco is the talent solutions division of Highspring, a leading global professional services organization. Vaco focuses on Contract Staffing and Direct Hire solutions.
+          </p>
+        </div>
+
+        {/* Solutions and Services */}
+        <div>
+          <h3 className="text-white font-semibold mb-3">Solutions and Services</h3>
+          <ul className="space-y-2">
+            <li>Consulting</li>
+            <li>Managed Services</li>
+            <li>Talent Solutions</li>
+            <li className="text-gray-400">Direct Hire</li>
+            <li className="text-gray-400">Contract Staffing</li>
           </ul>
         </div>
 
-        {/* Contact Info */}
-        <div className="space-y-2">
-          <h3 className="text-gray-800 font-medium">Contact</h3>
-          <p>Email: <a href="mailto:hello@acmetalent.com" className="hover:text-gray-900">hello@acmetalent.com</a></p>
-          <p>Phone: <a href="tel:+1234567890" className="hover:text-gray-900">+1 (234) 567-890</a></p>
-          <p>Location: Lagos, Nigeria</p>
+        {/* Expertise */}
+        <div>
+          <h3 className="text-white font-semibold mb-3">Expertise</h3>
+          <ul className="space-y-2">
+            <li>Technology and Digital</li>
+            <li>HR and Operations</li>
+            <li>Finance and Accounting</li>
+          </ul>
+        </div>
+
+        {/* Resource Center */}
+        <div>
+          <h3 className="text-white font-semibold mb-3">Resource Center</h3>
+          <ul className="space-y-2">
+            <li>Blog</li>
+            <li>Newsroom</li>
+            <li>White Papers</li>
+            <li>Case Studies</li>
+            <li>Events</li>
+          </ul>
         </div>
       </div>
 
-      <div className="border-t border-gray-100 text-center text-xs text-gray-400 py-6">
-        &copy; {new Date().getFullYear()} Acme Talent. All rights reserved.
+      <div className="border-t border-[#0F3A52] text-center text-xs text-gray-500 py-5">
+        &copy; {new Date().getFullYear()} Vaco by Highspring. All rights reserved.
       </div>
     </footer>
   );

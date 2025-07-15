@@ -7,7 +7,7 @@ export const metadata = {
   title: 'Vaco',
   description: 'Vaco job application platform',
   icons: {
-    icon: '/Vaco.webp', 
+    icon: '/logo.png', 
   },
 };
 
