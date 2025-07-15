@@ -148,7 +148,6 @@ export async function fetchApplicantById(id: string): Promise<Applicant & { onbo
 }
 
 
-
 export async function submitApplication(formData: FormData) {
   const resumeFile = formData.get('resume') as File;
 
@@ -157,11 +156,6 @@ export async function submitApplication(formData: FormData) {
   }
 
   const buffer = Buffer.from(await resumeFile.arrayBuffer());
-  const fileName = `${Date.now()}-${resumeFile.name}`;
-  const filePath = path.join(process.cwd(), 'public', 'resumes', fileName);
-  const resumeUrl = `/resumes/${fileName}`;
-
-  await fs.writeFile(filePath, buffer);
 
   const id = formData.get('id')?.toString()!;
   const first_name = formData.get('first_name')?.toString()!;
@@ -173,11 +167,13 @@ export async function submitApplication(formData: FormData) {
   await sql`
     INSERT INTO applicants (
       id, first_name, last_name, email, phone,
-      resume_url, resume_mime, status, application_date
+      resume_binary, resume_filename, resume_mime,
+      status, application_date
     )
     VALUES (
       ${id}, ${first_name}, ${last_name}, ${email}, ${phone},
-      ${resumeUrl}, ${resumeFile.type}, 'pending', ${application_date}
+      ${buffer}, ${resumeFile.name}, ${resumeFile.type},
+      'pending', ${application_date}
     )
   `;
 }

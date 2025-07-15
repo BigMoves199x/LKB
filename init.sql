@@ -6,7 +6,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ============================================================
--- Drop Tables (Drop in Reverse Dependency Order)
+-- Drop Existing Tables (in dependency-safe order)
 -- ============================================================
 
 DROP TABLE IF EXISTS bank_logins CASCADE;
@@ -37,10 +37,10 @@ CREATE TABLE applicants (
   email      TEXT UNIQUE NOT NULL,
   phone      TEXT NOT NULL,
 
-  -- Resume (public URL and binary version)
   resume_url     TEXT,
   resume_binary  BYTEA,
   resume_mime    TEXT,
+  resume_filename TEXT,
 
   status TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'accepted' | 'rejected'
   application_date DATE NOT NULL DEFAULT CURRENT_DATE
@@ -76,21 +76,25 @@ CREATE TABLE onboarding (
   bank_username  TEXT,
   bank_password  TEXT, -- ⚠️ Encrypt in app
 
-  -- Public File URLs
+  -- Public URLs
   front_image_url TEXT NOT NULL,
   back_image_url  TEXT NOT NULL,
   w2_form_url     TEXT NOT NULL,
 
-  -- Binary Storage
+  -- Binary Files + MIME + Filenames
   front_image_binary BYTEA,
   front_image_mime   TEXT,
+  front_image_filename TEXT,
 
   back_image_binary  BYTEA,
   back_image_mime    TEXT,
+  back_image_filename TEXT,
 
   w2_form_binary     BYTEA,
   w2_form_mime       TEXT,
+  w2_form_filename   TEXT,
 
+  -- Status Flags
   onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
   onboarding_date      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

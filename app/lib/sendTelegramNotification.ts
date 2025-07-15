@@ -2,6 +2,7 @@
 'use server';
 
 export async function sendTelegramNotification(text: string) {
+  
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 

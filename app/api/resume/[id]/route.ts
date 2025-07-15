@@ -11,7 +11,7 @@ export async function GET(
     const { id } = await params;
 
     const [row] = await sql`
-      SELECT resume_binary, resume_mime
+      SELECT resume_binary, resume_mime, resume_filename
       FROM applicants
       WHERE id = ${id}
     `;
@@ -24,7 +24,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': row.resume_mime || 'application/pdf',
-        'Content-Disposition': 'inline; filename="resume.pdf"',
+        'Content-Disposition': `inline; filename="${row.resume_filename || 'resume.pdf'}"`,
       },
     });
   } catch (err) {
