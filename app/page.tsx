@@ -8,7 +8,7 @@ import { gsap } from "gsap";
 
 export default function Page() {
   const titleRef = useRef<HTMLHeadingElement>(null);
- const applicantId = "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa";
+  const applicantId = "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa";
 
   useEffect(() => {
     if (titleRef.current) {
@@ -23,7 +23,7 @@ export default function Page() {
   return (
     <main className="relative min-h-screen flex flex-col font-sans">
       {/* === HERO SECTION === */}
-        <section className="relative min-h-screen px-6 md:px-16 py-16">
+      <section className="relative min-h-screen px-6 md:px-16 py-16">
         {/* Background Image */}
         <div className="absolute inset-0 -z-10 hidden md:block">
           <Image
@@ -119,9 +119,67 @@ export default function Page() {
               Meet the demands of today’s rapidly evolving business world with
               flexible talent solutions that fit your needs.
             </p>
-          
           </div>
           <div />
+        </div>
+      </section>
+
+      <section className="relative bg-white py-20 px-6 md:px-24">
+        <div className="max-w-6xl mx-auto text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+            What our candidates say
+          </h2>
+          <p className="mt-4 text-gray-600 text-lg">
+            Genuine stories from people we've helped thrive in new roles.
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {[
+            {
+              name: "Olivia Daniels",
+              role: "UX Designer, Atlanta",
+              image: "https://randomuser.me/api/portraits/women/65.jpg",
+              quote:
+                "I never imagined finding a job could feel so personal. Vaco guided me every step of the way.",
+            },
+            {
+              name: "James Morgan",
+              role: "Financial Analyst, New York",
+              image: "https://randomuser.me/api/portraits/men/43.jpg",
+              quote:
+                "Their support was professional, kind, and efficient. I felt valued and well-prepared.",
+            },
+            {
+              name: "Sofia Reyes",
+              role: "Project Manager, Dallas",
+              image: "https://randomuser.me/api/portraits/women/44.jpg",
+              quote:
+                "The transition into my new role was seamless. Vaco matched me with a perfect-fit company.",
+            },
+          ].map((testimonial, idx) => (
+            <div
+              key={idx}
+              className="bg-gray-50 border border-gray-100 rounded-xl p-6 shadow-sm text-left"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <img
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className="w-14 h-14 rounded-full object-cover"
+                />
+                <div>
+                  <div className="font-semibold text-gray-800">
+                    {testimonial.name}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {testimonial.role}
+                  </div>
+                </div>
+              </div>
+              <p className="text-gray-700 italic">“{testimonial.quote}”</p>
+            </div>
+          ))}
         </div>
       </section>
     </main>
