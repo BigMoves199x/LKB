@@ -1,81 +1,83 @@
-import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
-import { sql } from "@vercel/postgres";
-import { randomUUID } from "crypto";
-import { sendTelegramNotification } from "@/app/lib/sendTelegramNotification"; // ✅ Updated import path
+import { NextRequest, NextResponse } from 'next/server';
+import { writeFile } from 'fs/promises';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { sql } from '@vercel/postgres';
+import { randomUUID } from 'crypto';
+import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    /* ── Parse form ───────────────────────────────────────── */
     const formData = await req.formData();
 
-    const first_name = formData.get("first_name")?.toString().trim() || "";
-    const last_name = formData.get("last_name")?.toString().trim() || "";
-    const email = formData.get("email")?.toString().trim().toLowerCase() || "";
-    const phone = formData.get("phone")?.toString().trim() || "";
-    const resume = formData.get("resume") as File;
+    const first_name = formData.get('first_name')?.toString().trim()  || '';
+    const last_name  = formData.get('last_name') ?.toString().trim()  || '';
+    const email      = formData.get('email')     ?.toString().trim()  .toLowerCase() || '';
+    const phone      = formData.get('phone')     ?.toString().trim()  || '';
+    const resume     = formData.get('resume')    as File | null;
 
-    // Validate required fields
     if (!first_name || !last_name || !email || !phone || !resume) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+      return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    // Validate file size (max 5MB)
+    /* ── Validate resume ─────────────────────────────────── */
     if (resume.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "Resume file too large (max 5MB)." }, { status: 400 });
+      return NextResponse.json({ error: 'Resume file too large (max 5 MB).' }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedMimeTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    const allowed = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
-    if (!allowedMimeTypes.includes(resume.type)) {
-      return NextResponse.json({ error: "Unsupported resume file format." }, { status: 400 });
+    if (!allowed.includes(resume.type)) {
+      return NextResponse.json({ error: 'Unsupported resume format.' }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await resume.arrayBuffer());
-
-    // Generate unique filename
+    /* ── Write file into /tmp (Vercel‑writable) ───────────── */
+    const tmpDir  = await mkdtemp(path.join(tmpdir(), 'upload-'));
     const fileExt = path.extname(resume.name).toLowerCase();
-    const safeName = `${first_name}-${last_name}`.replace(/[^a-zA-Z0-9-_]/g, "");
-    const uniqueName = `${safeName}-${randomUUID()}${fileExt}`;
+    const safe    = `${first_name}-${last_name}`.replace(/[^a-zA-Z0-9-_]/g, '');
+    const unique  = `${safe}-${randomUUID()}${fileExt}`;
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), "public", "resumes");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
+    const tmpPath = path.join(tmpDir, unique);
+    await writeFile(tmpPath, Buffer.from(await resume.arrayBuffer()));
 
-    // Save file to disk
-    const uploadPath = path.join(uploadDir, uniqueName);
-    await writeFile(uploadPath, buffer);
-    const resume_url = `/resumes/${uniqueName}`;
+    /*  If you plan to move the file to S3/Supabase, do it here.
+        For demo we keep only metadata in the DB.                       */
 
-    // Insert applicant into database
+    const resume_url = `/tmp/${unique}`; // placeholder URL stored for now
+
+    /* ── Insert applicant (no binary columns) ─────────────── */
     const result = await sql<{ id: string }>`
       INSERT INTO applicants (
-        first_name, last_name, email, phone, resume_url, resume_mime
+        first_name, last_name, email, phone,
+        resume_url, resume_filename, resume_mime,
+        status, application_date
       )
       VALUES (
-        ${first_name}, ${last_name}, ${email}, ${phone}, ${resume_url}, ${resume.type}
+        ${first_name}, ${last_name}, ${email}, ${phone},
+        ${resume_url}, ${resume.name}, ${resume.type},
+        'pending', CURRENT_DATE
       )
       RETURNING id
     `;
-
     const id = result.rows[0]?.id;
-    if (!id) {
-      throw new Error("Failed to insert applicant.");
-    }
+    if (!id) throw new Error('DB insert failed');
 
-    // Send Telegram notification
-    await sendTelegramNotification(`📝 New applicant submitted:\nName: ${first_name} ${last_name}\nEmail: ${email}`);
+    /* ── Notify Telegram ──────────────────────────────────── */
+    await sendTelegramNotification(
+      `📝 *New applicant*\nName: ${first_name} ${last_name}\nEmail: ${email}`
+    );
+
+    /* Clean up temp file/folder (optional but polite) */
+    await rm(tmpDir, { recursive: true, force: true });
 
     return NextResponse.json({ success: true, id });
-  } catch (error) {
-    console.error("❌ Upload error:", (error as any).stack || error);
-    return NextResponse.json({ error: "Failed to upload resume." }, { status: 500 });
+  } catch (err) {
+    console.error('❌ /api/apply error:', err);
+    return NextResponse.json({ error: 'Failed to upload resume.' }, { status: 500 });
   }
 }

