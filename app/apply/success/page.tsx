@@ -1,4 +1,4 @@
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { ArrowRightIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function SuccessPage() {
@@ -14,15 +14,17 @@ export default function SuccessPage() {
         <p className="text-gray-600 text-sm">
           Thank you for applying. We truly appreciate your interest.
           <br />
-          We’ll get back to you via <span className="font-semibold">email</span> or{" "}
-          <span className="font-semibold">phone</span> as soon as possible.
+          We’ll get back to you via <span className="font-semibold">
+            email
+          </span>{" "}
+          or <span className="font-semibold">phone</span> as soon as possible.
         </p>
 
         <Link
           href="/"
-          className="mt-8 inline-block bg-[#072a00] hover:bg-[#072a40] text-white py-2 px-4 rounded-lg transition"
+          className="mt-4 inline-flex items-center gap-2 rounded-md border border-[#072a40] px-4 py-2 text-black hover:bg-[#072a40] hover:text-white hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in"
         >
-          Back to Home
+          Back to Home <ArrowRightIcon className="w-5 h-5" />
         </Link>
       </div>
     </div>
