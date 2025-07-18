@@ -4,8 +4,8 @@ import Footer from '@/app/ui/footer';
 import Navbar from '@/app/ui/navbar';
 
 export const metadata = {
-  title: 'Vaco',
-  description: 'Vaco job application platform',
+  title: 'Luke Bryan',
+  description: 'Luke Bryan Support platform',
   icons: {
     icon: '/logo.png', 
   },
@@ -19,7 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased flex flex-col min-h-screen`}>
-        <Navbar/>
         <main className="flex-grow">{children}</main>
         <Footer />
       </body>

@@ -1,61 +1,87 @@
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#05273D] text-gray-300 text-sm">
+    <footer className="bg-[#79aeb2] text-gray-300 text-sm">
       <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
-        {/* Logo and Description */}
+        {/* Logo & Mission Statement */}
         <div className="space-y-4">
-          <Image
-            src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-light.svg"
-            alt="Vaco Logo"
-            width={120}
-            height={30}
-            className=""
-          />
-          <p className="text-gray-400 leading-relaxed">
-            Vaco is the talent solutions division of Highspring, a leading global professional services organization. Vaco focuses on Contract Staffing and Direct Hire solutions.
+          <p className="text-white font-bold text-lg tracking-wide">Luke Bryan</p>
+          <p className="text-white leading-relaxed">
+            This initiative supports individuals from underserved communities with access to jobs, training, and mentorship — backed by Luke Bryan's belief in second chances and strong futures.
           </p>
         </div>
 
-        {/* Solutions and Services */}
+        {/* Program Links */}
         <div>
-          <h3 className="text-white font-semibold mb-3">Solutions and Services</h3>
+          <h3 className="text-white font-semibold mb-3">Our Programs</h3>
           <ul className="space-y-2">
-            <li>Consulting</li>
-            <li>Managed Services</li>
-            <li>Talent Solutions</li>
-            <li className="text-gray-400">Direct Hire</li>
-            <li className="text-gray-400">Contract Staffing</li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Job Opportunities
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Mentorship
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Workforce Training
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Expertise */}
+        {/* Get Involved */}
         <div>
-          <h3 className="text-white font-semibold mb-3">Expertise</h3>
+          <h3 className="text-white font-semibold mb-3">Get Involved</h3>
           <ul className="space-y-2">
-            <li>Technology and Digital</li>
-            <li>HR and Operations</li>
-            <li>Finance and Accounting</li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Become a Partner
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Volunteer
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-white transition">
+                Contact Us
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Resource Center */}
+        {/* Stay Connected */}
         <div>
-          <h3 className="text-white font-semibold mb-3">Resource Center</h3>
+          <h3 className="text-white font-semibold mb-3">Stay Connected</h3>
           <ul className="space-y-2">
-            <li>Blog</li>
-            <li>Newsroom</li>
-            <li>White Papers</li>
-            <li>Case Studies</li>
-            <li>Events</li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Instagram
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Facebook
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="hover:text-white transition">
+                Twitter/X
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
+      {/* Copyright */}
       <div className="border-t border-[#0F3A52] text-center text-xs text-gray-500 py-5">
-        &copy; {new Date().getFullYear()} Vaco by Highspring. All rights reserved.
+        &copy; {new Date().getFullYear()} Luke Bryan Community Initiative. All rights reserved.
       </div>
     </footer>
   );

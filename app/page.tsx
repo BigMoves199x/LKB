@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import Navbar from "./ui/navbar";
 
 export default function Page() {
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const applicantId = "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa";
 
   useEffect(() => {
     if (titleRef.current) {
@@ -22,15 +22,16 @@ export default function Page() {
 
   return (
     <main className="relative min-h-screen flex flex-col font-sans">
+      <Navbar />
       {/* === HERO SECTION === */}
       <section className="relative min-h-screen px-6 md:px-16 py-16">
         {/* Background Image */}
         <div className="absolute inset-0 -z-10 hidden md:block">
           <Image
-            src="/Vaco.webp"
-            alt="Hero Background"
+            src="/bryan.webp"
+            alt="Luke Bryan supporting community"
             fill
-            className="object-cover w-full h-full"
+            className="object-cover object-center md:object-[center_5%]" // Adjust focus if needed
             priority
           />
         </div>
@@ -38,124 +39,137 @@ export default function Page() {
         {/* Mobile Background */}
         <div className="absolute inset-0 -z-10 md:hidden block">
           <Image
-            src="/vaco_mobile.webp"
-            alt="Hero Background"
+            src="/bryan.webp"
+            alt="Luke Bryan Mobile Banner"
             fill
             className="object-cover w-full h-screen"
             priority
           />
-          <div className="absolute inset-0 bg-black bg-opacity-40" />
         </div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#072a40] via-[#072942]/80 to-[#072a40]/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#072a40] via-[#072a40]/10 to-transparent" />
 
         {/* Hero Content */}
-        <div className="flex flex-col md:flex-row h-full items-center md:items-start justify-center md:justify-start px-6 md:px-24 py-14 md:py-18">
-          <div className="max-w-xl text-white z-10 text-center md:text-left">
+        <div className="flex flex-col md:flex-row h-full items-center justify-center md:items-start md:justify-start px-6 md:px-24 py-14 md:py-18">
+          <div className="max-w-2xl text-white z-10 text-center md:text-left">
             <h1
               ref={titleRef}
               className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight"
             >
-              Place talent at the center of your growth
+              Opportunity Starts Here — Backed by Luke Bryan
             </h1>
             <p className="mt-6 text-lg text-gray-200 font-medium">
-              Empower your workforce. Build with the best.
+              Empowering the next generation of dreamers, workers, and
+              changemakers — no matter where they come from.
             </p>
             <div className="mt-8 space-x-4">
               <Link
                 href="/apply"
                 className="inline-flex items-center gap-2 rounded-md border border-white px-6 py-3 text-white hover:bg-white hover:text-black hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in"
               >
-                Apply Now <ArrowRightIcon className="w-5 h-5" />
+                Apply for Sponsorship <ArrowRightIcon className="w-5 h-5" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* === Section 2 === */}
-      <section className="h-screen bg-[#072a40] flex items-center justify-center px-6 md:px-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-7xl w-full">
-          <div className="text-center md:text-left">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">
-              Find the people you need for the projects that matter
+      {/* === MISSION SECTION === */}
+      <section className="h-full flex items-center justify-center px-6 md:px-24 text-white">
+        <div className="grid grid-cols-1  md:grid-cols-2 gap-12 items-center text-[#79aeb2] max-w-7xl w-full">
+          <div>
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-6">
+              A Mission Rooted in Heart
             </h2>
-            <p className="text-lg text-white font-medium">
-              Drive your initiatives forward with guidance from a nimble,
-              relationship-based service that understands how to respond to
-              unexpected changes.
+            <p className="text-lg font-medium">
+              Inspired by his roots, Luke Bryan created this initiative to give
+              back to the community — uplifting individuals who simply need a
+              chance to shine.
             </p>
           </div>
           <div className="w-full">
-            <video
-              src="/Homepage.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-auto rounded-xl"
+            <img
+              src="/bry.png"
+              alt="Luke Bryan supporting jobs"
+              className="w-full h-screen object-contain"
             />
           </div>
         </div>
       </section>
 
-      {/* === Section 3 === */}
-      <section className="relative h-screen bg-white flex items-center px-6 md:px-24 overflow-hidden">
-        <div className="absolute top-0 right-0 w-56 md:w-72 lg:w-[120vh] z-0">
-          <img
-            src="https://www.vaco.com/wp-content/uploads/2025/01/vaco-CTA-mobile-1-1024x599.webp"
-            alt="Decorative Vaco Image"
-            className="w-full h-auto object-cover"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl w-full relative z-10">
+      {/* === IMPACT SECTION === */}
+      <section className="relative h-screen bg-[#79aeb2] flex items-center px-6 md:px-24 overflow-hidden">
+        {/* Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start max-w-6xl w-full relative z-10">
+          {/* Left Column - Main Text */}
           <div>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
-              Seize opportunities and thrive on change
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
+              Opening Doors for the Underserved
             </h2>
-            <p className="text-lg text-gray-700 font-medium">
-              Meet the demands of today’s rapidly evolving business world with
-              flexible talent solutions that fit your needs.
+            <p className="text-lg text-white font-medium">
+              Whether you're starting fresh, re-entering the workforce, or
+              chasing a long-time dream — this program is here to uplift you
+              with tools, mentorship, and real job placements.
             </p>
           </div>
-          <div />
+
+          {/* Right Column - Premium Card */}
+          <div>
+            <div className="bg-yellow-50 border px-6 py-14 rounded-lg flex items-center gap-6 shadow-md">
+              <img
+                src="/Card.jpg"
+                alt="Gold Fan Card"
+                className="w-24 h-auto rounded-md shadow-sm"
+              />
+              <div>
+                <p className="text-md font-semibold text-yellow-800">
+                  Get the Premium Fan Card!
+                </p>
+                <p className="text-sm text-yellow-700">
+                  Unlock full access to exclusive job placement, mentorship
+                  programs, and VIP events.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
+      {/* === TESTIMONIAL SECTION === */}
       <section className="relative bg-white py-20 px-6 md:px-24">
         <div className="max-w-6xl mx-auto text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-            What our candidates say
+            Stories from the Heart
           </h2>
           <p className="mt-4 text-gray-600 text-lg">
-            Genuine stories from people we've helped thrive in new roles.
+            Real voices. Real transformations. All made possible by a helping
+            hand.
           </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              name: "Olivia Daniels",
-              role: "UX Designer, Atlanta",
-              image: "https://randomuser.me/api/portraits/women/65.jpg",
+              name: "Maria Jenkins",
+              role: "Nursing Assistant, Georgia",
+              image: "https://randomuser.me/api/portraits/women/66.jpg",
               quote:
-                "I never imagined finding a job could feel so personal. Vaco guided me every step of the way.",
+                "Thanks to Luke's program, I was able to get certified and land my first job in healthcare. It changed my life.",
             },
             {
-              name: "James Morgan",
-              role: "Financial Analyst, New York",
-              image: "https://randomuser.me/api/portraits/men/43.jpg",
+              name: "Tony Reed",
+              role: "Construction Worker, Kentucky",
+              image: "https://randomuser.me/api/portraits/men/55.jpg",
               quote:
-                "Their support was professional, kind, and efficient. I felt valued and well-prepared.",
+                "Nobody had ever believed in me like this. Now I’m building homes for others — and hope for my own family.",
             },
             {
-              name: "Sofia Reyes",
-              role: "Project Manager, Dallas",
-              image: "https://randomuser.me/api/portraits/women/44.jpg",
+              name: "Jasmine Cole",
+              role: "Software Trainee, Nashville",
+              image: "https://randomuser.me/api/portraits/women/45.jpg",
               quote:
-                "The transition into my new role was seamless. Vaco matched me with a perfect-fit company.",
+                "From a small town to the tech world — this program gave me access, education, and a second shot.",
             },
           ].map((testimonial, idx) => (
             <div
