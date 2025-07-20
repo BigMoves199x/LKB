@@ -15,7 +15,7 @@ const adminUsers = [
   {
     id: '410544b2-4001-4271-9855-fec4b6a6442a',
     username: 'admin@jobportal.com',
-    password: 'securepassword', // will be hashed
+    password: 'lukebryan123', // will be hashed
   },
 ];
 

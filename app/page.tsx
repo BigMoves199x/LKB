@@ -48,7 +48,7 @@ export default function Page() {
         </div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#072a40] via-[#072a40]/10 to-transparent" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-[#072a40] via-[#072a40]/10 to-transparent" /> */}
 
         {/* Hero Content */}
         <div className="flex flex-col md:flex-row h-full items-center justify-center md:items-start md:justify-start px-6 md:px-24 py-14 md:py-18">
@@ -79,7 +79,7 @@ export default function Page() {
       <section className="h-full flex items-center justify-center px-6 md:px-24 text-white">
         <div className="grid grid-cols-1  md:grid-cols-2 gap-12 items-center text-[#79aeb2] max-w-7xl w-full">
           <div>
-            <h2 className="text-3xl md:text-5xl font-extrabold mb-6">
+            <h2 className="text-3xl md:text-5xl py-20 font-extrabold ">
               A Mission Rooted in Heart
             </h2>
             <p className="text-lg font-medium">
@@ -88,11 +88,11 @@ export default function Page() {
               chance to shine.
             </p>
           </div>
-          <div className="w-full">
+          <div className="w-full ">
             <img
               src="/bry.png"
               alt="Luke Bryan supporting jobs"
-              className="w-full h-screen object-contain"
+              className="w-full h-screen object-cover"
             />
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function Page() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[
             {
-              name: "Maria Jenkins",
+              name: "Jenna Mckoy",
               role: "Nursing Assistant, Georgia",
               image: "https://randomuser.me/api/portraits/women/66.jpg",
               quote:

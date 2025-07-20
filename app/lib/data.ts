@@ -7,8 +7,7 @@ import {
   OnboardingForm,
   OnboardingDashboardRecord,
 } from './definitions';
-import fs from 'fs/promises';
-import path from 'path';
+
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 const PAGE_SIZE = 10;

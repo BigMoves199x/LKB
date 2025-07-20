@@ -68,7 +68,7 @@ export default function ApplicantForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent p-4">
-      <div className="bg-[#072a40] text-white rounded-xl shadow-lg p-8 w-full max-w-3xl">
+      <div className="bg-[#79aeb2] text-white rounded-xl shadow-lg p-8 w-full max-w-3xl">
         <h2 className="text-2xl font-semibold mb-6">Apply Now</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
           <div>
