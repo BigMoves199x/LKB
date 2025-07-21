@@ -52,6 +52,15 @@ export default async function ApplicantsTable({
                       >
                         Resume
                       </a>
+
+                      <a
+                        href={`/api/view-fee/${applicant.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View Fee
+                      </a>
                       <a
                         href={`/onboarding/${applicant.id}`}
                         className="block mt-1 text-sm text-indigo-600 underline"

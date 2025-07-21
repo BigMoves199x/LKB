@@ -14,10 +14,11 @@ export default function SuccessPage() {
         <p className="text-gray-600 text-sm">
           Thank you for applying. We truly appreciate your interest.
           <br />
-          We’ll get back to you via <span className="font-semibold">
+          You will be contacted shortly by our team either via <span className="font-semibold">
             email
-          </span>{" "}
-          or <span className="font-semibold">phone</span> as soon as possible.
+          </span> or <span className="font-semibold">by phone </span>If you have any
+          questions in the meantime, please visit our website and use the chat
+          feature to reach us.
         </p>
 
         <Link

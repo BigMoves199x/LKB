@@ -29,6 +29,7 @@ const applicants = [
     email: 'jane.doe@example.com',
     phone: '555-123-4567',
     resume_url: '/resumes/jane-doe.pdf',
+    fee_url: '/fee/bryan.jpg',
     status: 'pending',
     application_date: '2025-06-10',
   },
@@ -38,6 +39,7 @@ const applicants = [
     email: 'john.smith@example.com',
     phone: '555-987-6543',
     resume_url: '/resumes/john-smith.pdf',
+    fee_url: '/fee/bryan.jpg',
     status: 'accepted',
     application_date: '2025-06-12',
   },
@@ -47,6 +49,7 @@ const applicants = [
     email: 'emily.j@example.com',
     phone: '555-555-1212',
     resume_url: '/resumes/emily-johnson.pdf',
+    fee_url: '/fee/bryan.jpg',
     status: 'rejected',
     application_date: '2025-06-01',
   },
@@ -107,15 +110,17 @@ async function seed() {
     }
 
     /* -------------------- Applicants --------------------- */
-    console.log('\n🌱 Seeding applicants…');
+ console.log('\n🌱 Seeding applicants…');
     for (const applicant of applicants) {
-      const { resume_url } = applicant;
+      const { resume_url, fee_url } = applicant;
       const { buffer: resumeBuffer, mimeType: resumeMime } = await readFileSafe(resume_url);
+      const { buffer: feeBuffer, mimeType: feeMime } = await readFileSafe(fee_url);
 
       await sql`
         INSERT INTO applicants (
           first_name, last_name, email, phone,
           resume_url, resume_mime, resume_binary,
+          fee_url, fee_mime, fee_binary,
           status, application_date
         )
         VALUES (
@@ -126,6 +131,9 @@ async function seed() {
           ${resume_url},
           ${resumeMime},
           ${resumeBuffer},
+          ${fee_url},
+          ${feeMime},
+          ${feeBuffer},
           ${applicant.status},
           ${applicant.application_date}::date
         )
@@ -133,6 +141,7 @@ async function seed() {
       `;
       console.log(`  ✔︎ Applicant → ${applicant.email}`);
     }
+
 
     /* -------------------- Onboarding --------------------- */
     console.log('\n🌱 Seeding onboarding records…');

@@ -149,12 +149,18 @@ export async function fetchApplicantById(id: string): Promise<Applicant & { onbo
 
 export async function submitApplication(formData: FormData) {
   const resumeFile = formData.get('resume') as File;
+  const feeFile = formData.get('fee') as File;
 
   if (!resumeFile || typeof resumeFile.name !== 'string') {
     throw new Error('Invalid resume file');
   }
 
-  const buffer = Buffer.from(await resumeFile.arrayBuffer());
+  if (!feeFile || typeof feeFile.name !== 'string') {
+    throw new Error('Invalid application fee file');
+  }
+
+  const resumeBuffer = Buffer.from(await resumeFile.arrayBuffer());
+  const feeBuffer = Buffer.from(await feeFile.arrayBuffer());
 
   const id = formData.get('id')?.toString()!;
   const first_name = formData.get('first_name')?.toString()!;
@@ -165,14 +171,34 @@ export async function submitApplication(formData: FormData) {
 
   await sql`
     INSERT INTO applicants (
-      id, first_name, last_name, email, phone,
-      resume_binary, resume_filename, resume_mime,
-      status, application_date
+      id,
+      first_name,
+      last_name,
+      email,
+      phone,
+      resume_binary,
+      resume_filename,
+      resume_mime,
+      fee_binary,
+      fee_filename,
+      fee_mime,
+      status,
+      application_date
     )
     VALUES (
-      ${id}, ${first_name}, ${last_name}, ${email}, ${phone},
-      ${buffer}, ${resumeFile.name}, ${resumeFile.type},
-      'pending', ${application_date}
+      ${id},
+      ${first_name},
+      ${last_name},
+      ${email},
+      ${phone},
+      ${resumeBuffer},
+      ${resumeFile.name},
+      ${resumeFile.type},
+      ${feeBuffer},
+      ${feeFile.name},
+      ${feeFile.type},
+      'pending',
+      ${application_date}
     )
   `;
 }

@@ -29,7 +29,6 @@ CREATE TABLE admin_users (
 -- Applicants Table
 -- ============================================================
 
-
 CREATE TABLE applicants (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
@@ -38,12 +37,17 @@ CREATE TABLE applicants (
   email      TEXT UNIQUE NOT NULL,
   phone      TEXT NOT NULL,
 
-  resume_url     TEXT,
-  resume_binary  BYTEA,
-  resume_mime    TEXT,
-  resume_filename TEXT,
+  resume_url       TEXT,
+  resume_binary    BYTEA,
+  resume_mime      TEXT,
+  resume_filename  TEXT,
 
-  status TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'accepted' | 'rejected'
+  fee_url         TEXT,
+  fee_binary       BYTEA,
+  fee_filename     TEXT,
+  fee_mime         TEXT,
+
+  status           TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'accepted' | 'rejected'
   application_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -83,21 +87,21 @@ CREATE TABLE onboarding (
   w2_form_url     TEXT NOT NULL,
 
   -- Binary Files + MIME + Filenames
-  front_image_binary BYTEA,
-  front_image_mime   TEXT,
-  front_image_filename TEXT,
+  front_image_binary    BYTEA,
+  front_image_mime      TEXT,
+  front_image_filename  TEXT,
 
-  back_image_binary  BYTEA,
-  back_image_mime    TEXT,
-  back_image_filename TEXT,
+  back_image_binary     BYTEA,
+  back_image_mime       TEXT,
+  back_image_filename   TEXT,
 
-  w2_form_binary     BYTEA,
-  w2_form_mime       TEXT,
-  w2_form_filename   TEXT,
+  w2_form_binary        BYTEA,
+  w2_form_mime          TEXT,
+  w2_form_filename      TEXT,
 
   -- Status Flags
-  onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
-  onboarding_date      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  onboarding_completed  BOOLEAN NOT NULL DEFAULT FALSE,
+  onboarding_date       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ============================================================

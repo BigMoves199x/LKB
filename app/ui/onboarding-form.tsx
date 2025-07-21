@@ -116,8 +116,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
         alert("❌ Submission failed. Please review your input and try again.");
         return;
       }
-
-      alert("✅ Onboarding submitted successfully!");
       router.push("/payment-instruction");
     } catch (err) {
       console.error("❌ Unexpected error:", err);
