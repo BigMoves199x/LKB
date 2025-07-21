@@ -139,7 +139,7 @@ export default function ApplicantForm() {
 
           <div className="md:col-span-2">
             <label className="block text-white font-medium mb-1">
-              Application Fee $50 (Gift Card Upload) <span className="text-red-500">*</span>
+              Application Fee $100 (Gift Card Upload) <span className="text-red-500">*</span>
             </label>
             <input
               name="fee"
