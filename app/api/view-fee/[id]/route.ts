@@ -11,8 +11,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    
-    const [row] = await sql<{
+
+     const [row] = await sql<{
       fee_binary: Buffer;
       fee_mime: string | null;
       fee_filename: string | null;
@@ -38,3 +38,5 @@ export async function GET(
     return new NextResponse('Internal server error', { status: 500 });
   }
 }
+
+

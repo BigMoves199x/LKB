@@ -88,6 +88,7 @@ export default async function ApplicantsTable({
                 <th className="px-3 py-3">Email</th>
                 <th className="px-3 py-3">Phone</th>
                 <th className="px-3 py-3">Resume</th>
+                <th className="px-3 py-3">Fee</th> {/* ✅ Added */}
                 <th className="px-3 py-3">Application Date</th>
                 <th className="px-3 py-3">Status</th>
                 <th className="px-3 py-3">Onboarding Link</th>
@@ -101,7 +102,6 @@ export default async function ApplicantsTable({
                 const formattedDate = formatDateToLocal(
                   applicant.application_date
                 );
-
                 return (
                   <tr
                     key={applicant.id}
@@ -127,6 +127,16 @@ export default async function ApplicantsTable({
                       </a>
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
+                      <a
+                        href={`/api/view-fee/${applicant.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View Fee
+                      </a>
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap">
                       {formattedDate}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -146,7 +156,7 @@ export default async function ApplicantsTable({
                       </a>
                     </td>
                     <td className="py-3 pl-6 pr-3 text-right text-gray-500">
-                      {/* Add future actions here if needed */}
+                      {/* Future actions */}
                     </td>
                   </tr>
                 );

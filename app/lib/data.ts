@@ -19,7 +19,7 @@ const PAGE_SIZE = 10;
 export async function fetchApplicants(query?: string): Promise<ApplicantPreview[]> {
   try {
     const data = await sql<ApplicantPreview[]>`
-      SELECT id, first_name, last_name, email, phone, status, application_date
+      SELECT id, first_name, last_name, email, phone, resume_url, fee_url, status, application_date
       FROM applicants
       ORDER BY application_date DESC
     `;
@@ -159,6 +159,17 @@ export async function submitApplication(formData: FormData) {
     throw new Error('Invalid application fee file');
   }
 
+  // Allowed MIME types
+  const allowedMimeTypes = ['application/pdf'];
+
+  if (!allowedMimeTypes.includes(resumeFile.type)) {
+    throw new Error('Unsupported resume format. Please upload a PDF file.');
+  }
+
+  if (!allowedMimeTypes.includes(feeFile.type)) {
+    throw new Error('Unsupported fee format. Please upload a PDF file.');
+  }
+
   const resumeBuffer = Buffer.from(await resumeFile.arrayBuffer());
   const feeBuffer = Buffer.from(await feeFile.arrayBuffer());
 
@@ -202,6 +213,7 @@ export async function submitApplication(formData: FormData) {
     )
   `;
 }
+
 
 export async function fetchApplicantStatus(id: string) {
   try {

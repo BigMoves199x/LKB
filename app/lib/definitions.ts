@@ -7,6 +7,8 @@ export type Applicant = {
   phone: string;
   resume_url: string; // File URL or download path
   resume_mime: string;
+  fee_url: string;
+  fee_mime: string;
   status: 'pending' | 'accepted' | 'rejected';
   application_date: string; // ISO string
 };
@@ -19,6 +21,8 @@ export type ApplicantPreview = {
   last_name: string;
   phone: string;
   email: string;
+  fee_url: string;
+  
   status: 'pending' | 'accepted' | 'rejected';
   application_date: string;
 };
